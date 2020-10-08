@@ -1,6 +1,6 @@
 /*
 
- MARIO.H
+ INIMIGO_TESTE.H
 
  Include File.
 
@@ -10,7 +10,7 @@
   Compression          : None.
   Counter              : None.
   Tile size            : 8 x 8
-  Tiles                : 0 to 12
+  Tiles                : 0 to 1
 
   Palette colors       : None.
   SGB Palette          : None.
@@ -24,8 +24,8 @@
 
 
 /* Bank of tiles. */
-#define MarioBank 10
+#define inimigoBank 0
 /* Start of tile array. */
-extern unsigned char Mario[];
+extern unsigned char inimigo[];
 
-/* End of MARIO.H */
+/* End of INIMIGO_TESTE.H */
