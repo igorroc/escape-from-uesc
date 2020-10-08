@@ -12,7 +12,7 @@ typedef struct Livro{
     UINT8 caveira; // INDICA SE E UMA CAVEIRA
 }_Livro;
 
-    _Livro livro[5];
+    _Livro livro;
 
 
 #endif

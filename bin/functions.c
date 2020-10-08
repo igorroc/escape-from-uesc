@@ -5,6 +5,9 @@
 
 #include "struct_player.c"
 
+
+
+
 // --------------- FUNCOES DE TELA ---------------
 
 void fadeout(UINT8 tempo);
@@ -21,18 +24,34 @@ void som_sair();
 // ------------ FUNCOES DE MOVIMENTO ------------
 
 int colisao_chao(UINT8);
+UINT8 colisao_plataforma(UINT8, UINT8, UINT8);
 int colisao_16bits(UINT8, UINT8, UINT8, UINT8);//RETORNA 1 SE COLIDIU, 0 SE NAO
+int colisao_8bits(UINT8, UINT8, UINT8, UINT8);
 void pular();
 void mover_personagem_cima();
 void mover_personagem_lado();
 void mover_mochila_lado();
 void mover_sprites(UINT8 id, UINT8 x, UINT8 y);
+void setup_plantas();
+void remover_plantas();
+void animacao_moeda();
 
 // ------------ FUNCOES DE VERIFICACAO ------------
 
+UINT8 verifica_guarita();
 UINT8 verifica_biblioteca();
+UINT8 verifica_jorge();
+UINT8 verifica_exatas();
+UINT8 verifica_adonias();
+UINT8 verifica_ru();
+void verifica_borda();
+void verifica_vidas();
+UINT8 sorteio(UINT8, UINT8);
+
+
 
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
 
 // --------------- FUNCOES DE TELA ---------------
 
@@ -169,15 +188,31 @@ void som_sair(){
 // ------------ FUNCOES DE MOVIMENTO ------------
 
 int colisao_chao(UINT8 y){
-    if(y >= CHAO){
-        return CHAO;
+    if(y+16 >= CHAO){
+        return 1;
     }
-    return -1;
+    return 0;
+}
+
+UINT8 colisao_plataforma(UINT8 x_min, UINT8 x_max, UINT8 y){
+    if(player.x > x_min && player.x < x_max && ((player.y+16) > y && (player.y+16) < y+16)){
+        return TRUE;
+    }
+    return FALSE;
 }
 
 int colisao_16bits(UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2){
-    if(x1 >= x2 - 16 && x1 <= x2 + 16){
-        if(y1 >= y2 - 16 && y1 < y2 + 16){
+    if(x1 > x2 - 16 && x1 < x2 + 16){
+        if(y1 > y2 - 16 && y1 < y2 + 16){
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int colisao_8bits(UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2){ //X1 E Y1 É DA PLANTA, X2 E Y2 É DO PLAYER
+    if(x1 > x2 - 8 && x1 < x2 + 16){
+        if(y1 > y2 - 8 && y1 < y2 + 16){
             return 1;
         }
     }
@@ -185,12 +220,11 @@ int colisao_16bits(UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2){
 }
 
 void pular(){
-    INT8 possivel_y;
 
     if(player.pulando == FALSE){
         player.pulando = TRUE;
-        player.velocidade_y = 15;
     }
+
 
     if(player.direcao == 1){
         set_sprite_tile(player.id, 20);
@@ -207,29 +241,37 @@ void pular(){
     player.velocidade_y += GRAVIDADE;
     player.y -= player.velocidade_y;
 
-    possivel_y = (INT8)colisao_chao(player.y);
-
-
-    if(possivel_y != -1){
+    
+    if(colisao_chao(player.y)){
         player.pulando = FALSE;
+        player.y = CHAO-16;
+        player.chao = TRUE;
+    }else{
+        player.chao = FALSE;
     }
 }
 
 void mover_personagem_lado(){
     switch (joypad()){
         case J_UP:
-            if(player.pulando == FALSE && player.CD_pulo == 0){
-                som_pulo();
+            if(player.pulando == FALSE){
+                player.velocidade_y = 11;
                 pular();
-                player.CD_pulo = 15;
+                som_pulo();
             }
             break;
 
         case J_DOWN:
             if(player.agachando == FALSE){
                 player.agachando = TRUE;
+                if(player.chao == FALSE){
+                    player.pulando = TRUE;
+                    player.y += 16;
+                    som_sair();
+                }
             }
-
+            
+            
             if(player.direcao == 1){
                 set_sprite_tile(player.id, 28);
                 set_sprite_tile(player.id+1, 29);
@@ -244,7 +286,7 @@ void mover_personagem_lado(){
             break;
 
         case J_LEFT:
-            player.x--;
+            player.x -= 3;
             if(player.direcao == 1){
                 set_sprite_prop(player.id, S_FLIPX);
                 set_sprite_prop(player.id+1, S_FLIPX);
@@ -271,7 +313,7 @@ void mover_personagem_lado(){
             break;
 
         case J_RIGHT:
-            player.x++;
+            player.x += 3;
             if(player.direcao == -1){
                 set_sprite_prop(player.id, 1);
                 set_sprite_prop(player.id+1, 1);
@@ -297,10 +339,10 @@ void mover_personagem_lado(){
             break;
 
         case J_A:
-            set_sprite_tile(player.id, 10+player.direcao);
-            if(player.socando == FALSE){
-                som_soco();
-                player.socando = TRUE;
+            if(player.pulando == FALSE){
+                player.velocidade_y = 17;
+                pular();
+                som_pulo();
             }
             break;
 
@@ -324,7 +366,7 @@ void mover_personagem_lado(){
             player.piscando++;
             player.agachando = FALSE;
             player.socando = FALSE;
-            if(player.pulando == 0){
+            if(player.pulando == FALSE){
                 if(player.direcao == 1){
                     if(player.piscando == 100){
                         player.piscando = 0;
@@ -371,8 +413,8 @@ void mover_personagem_cima(){
         case J_UP: 
             set_sprite_tile(player.id, 32);
             set_sprite_prop(player.id, 0);
-            if(player.y + background.y >= 24){
-                if(player.y >= 16){
+            if(player.y + background.y >= 20){
+                if(player.y >= 18){
                     player.y -= 3;
                 }
             }
@@ -386,8 +428,10 @@ void mover_personagem_cima(){
             set_sprite_tile(player.id, 32);
             set_sprite_prop(player.id, 0);
             set_sprite_prop(player.id, S_FLIPY);
-            if(player.y + background.y <= 246){
-                player.y += 3;
+            if(player.y + background.y <= 255){
+                if(player.y <= 151){
+                    player.y += 3;
+                }
             }
             if(background.y < 103){
                 background.y += 3;
@@ -399,7 +443,7 @@ void mover_personagem_cima(){
             set_sprite_tile(player.id, 33);
             set_sprite_prop(player.id, S_FLIPX);
             if(player.x + background.x >= 8){
-                if(player.x >= 8){
+                if(player.x >= 9){
                     player.x -= 3;
                 }
             }
@@ -412,8 +456,10 @@ void mover_personagem_cima(){
         case J_RIGHT:
             set_sprite_tile(player.id, 33);
             set_sprite_prop(player.id, 0);
-            if(player.x + background.x <= 240){
-                player.x += 3;
+            if(player.x + background.x <= 250){
+                if(player.x <= 158){
+                    player.x += 3;
+                }
             }
             if(background.x < 88){
                 background.x += 3;
@@ -442,19 +488,201 @@ void mover_mochila_lado(){
 }
 
 void mover_sprites(UINT8 id, UINT8 x, UINT8 y){
-    move_sprite(id, x, y); // esquerda superior
-    move_sprite(id+1, x, y+8); // esquerda inferior
-    move_sprite(id+2, x+8, y); // direita superior
-    move_sprite(id+3, x+8, y+8); // direita inferior
+    move_sprite(id, x, y); // ESQUERDA SUPERIOR
+    move_sprite(id+1, x, y+8); // ESQUERDA INFERIOR
+    move_sprite(id+2, x+8, y); // DIREITA SUPERIOR
+    move_sprite(id+3, x+8, y+8); // DIREITA INFERIOR
+}
+
+void setup_plantas(){
+    planta[0].id = 16; //TOPO ESQUERDA PRA DIREITA
+    planta[0].x = 0;
+    planta[0].y = 52;
+    planta[0].direcao = 1;
+    planta[0].velocidade_x = sorteio(1, 4);
+    planta[0].passo = 0;
+    set_sprite_tile(planta[0].id, 84);
+
+    planta[1].id = 17; //TOPO DIREITA PRA ESQUERDA
+    planta[1].x = 160;
+    planta[1].y = 52;
+    planta[1].direcao = 0;
+    planta[1].velocidade_x = sorteio(1, 4);
+    planta[1].passo = 0;
+    set_sprite_tile(planta[1].id, 84);
+
+    planta[2].id = 18; //MEIO ESQUERDA PRA DIREITA
+    planta[2].x = 8;
+    planta[2].y = 100;
+    planta[2].direcao = 1;
+    planta[2].velocidade_x = sorteio(1, 4);
+    planta[2].passo = 0;
+    set_sprite_tile(planta[2].id, 84);
+
+    planta[3].id = 19; //MEIO DIREITA PRA ESQUERDA
+    planta[3].x = 160;
+    planta[3].y = 100;
+    planta[3].direcao = 0;
+    planta[3].velocidade_x = sorteio(1, 4);
+    planta[3].passo = 0;
+    set_sprite_tile(planta[3].id, 84);
+
+    planta[4].id = 20; //CHAO ESQUERDA PRA DIREITA
+    planta[4].x = 8;
+    planta[4].y = 144;
+    planta[4].direcao = 1;
+    planta[4].velocidade_x = sorteio(1, 4);
+    planta[4].passo = 0;
+    set_sprite_tile(planta[4].id, 84);
+
+    planta[5].id = 21; //CHAO DIREITA PRA ESQUERDA
+    planta[5].x = 160;
+    planta[5].y = 144;
+    planta[5].direcao = 0;
+    planta[5].velocidade_x = sorteio(1, 4);
+    planta[5].passo = 0;
+    set_sprite_tile(planta[5].id, 84);
+}
+
+void remover_plantas(){
+    int i;
+    for(i = 0; i < 6; i++){
+        planta[i].x = 250;
+        planta[i].y = 250;
+        move_sprite(planta[i].id, planta[i].x, planta[i].y);
+    }
+}
+
+void animacao_moeda(){
+    if(moeda.brilho == 2){
+        if(moeda.giro > 11){
+            moeda.giro = 0;
+            moeda.brilho = 0;
+        }else if(moeda.giro > 8){
+            set_sprite_tile(moeda.id, 92);
+            moeda.giro++;
+        }else if(moeda.giro > 5){
+            set_sprite_tile(moeda.id, 93);
+            moeda.giro++;
+        }else if(moeda.giro > 2){
+            set_sprite_tile(moeda.id, 92);
+            moeda.giro++;
+        }else{
+            set_sprite_tile(moeda.id, 91);
+            set_sprite_prop(moeda.id, 0);
+            moeda.giro++;
+        }
+    }else{
+        if(moeda.giro > 11){
+            moeda.giro = 0;
+            moeda.brilho++;
+        }else if(moeda.giro > 8){
+            set_sprite_tile(moeda.id, 89);
+            set_sprite_prop(moeda.id, S_FLIPX);
+            moeda.giro++;
+            moeda.y++;
+        }else if(moeda.giro > 5){
+            set_sprite_tile(moeda.id, 90);
+            moeda.giro++;
+            moeda.y++;
+        }else if(moeda.giro > 2){
+            set_sprite_tile(moeda.id, 89);
+            moeda.giro++;
+            moeda.y--;
+        }else{
+            set_sprite_tile(moeda.id, 88);
+            set_sprite_prop(moeda.id, 0);
+            moeda.giro++;
+            moeda.y--;
+        }
+    }
+    move_sprite(moeda.id, moeda.x, moeda.y);
 }
 
 // ------------ FUNCOES DE VERIFICACAO ------------
 
-UINT8 verifica_biblioteca(){
-    if(((background.x+player.x) >= 15 && (background.x+player.x) <= 38) && ((background.y+player.y) >= 52 && (background.y+player.y) <= 55)){
+UINT8 verifica_guarita(){
+    if((background.x+player.x) >= 94 && (background.x+player.x) <= 142 && (background.y+player.y) <= 24){
         return 1;
     }
     return 0;
+}
+
+UINT8 verifica_biblioteca(){
+    if((background.x+player.x) >= 15 && (background.x+player.x) <= 38 && (background.y+player.y) >= 35 && (background.y+player.y) <= 70){
+        return 1;
+    }
+    return 0;
+}
+
+UINT8 verifica_jorge(){
+    if((background.x+player.x) >= 46 && (background.x+player.x) <= 62 && (background.y+player.y) >= 138 && (background.y+player.y) <= 154){
+        return 1;
+    }
+    return 0;
+}
+
+UINT8 verifica_exatas(){
+    if((background.x+player.x) >= 70 && (background.x+player.x) <= 86 && (background.y+player.y) >= 218 && (background.y+player.y) <= 234){
+        return 1;
+    }
+    return 0;
+}
+
+UINT8 verifica_adonias(){
+    if((background.x+player.x) >= 180 && (background.x+player.x) <= 194 && (background.y+player.y) >= 130 && (background.y+player.y) <= 146){
+        return 1;
+    }
+    return 0;
+}
+
+UINT8 verifica_ru(){
+    if((background.x+player.x) >= 220 && (background.y+player.y) >= 170 && (background.y+player.y) <= 190){
+        return 1;
+    }
+    return 0;
+}
+
+void verifica_borda(){
+    if(player.x <= 8){
+        player.x = 8;
+    }else if(player.x >= 152){
+        player.x = 152;
+    }else if(player.y <= 8){
+        player.y = 8;
+        player.velocidade_y = 0;
+    }
+}
+
+void verifica_vidas(){
+    switch (player.vidas){
+        case 3:
+            move_sprite(7, 142, 20);
+            move_sprite(8, 150, 20);
+            move_sprite(9, 158, 20);
+            break;
+        case 2:
+            move_sprite(7, 142, 20);
+            move_sprite(8, 150, 20);
+            move_sprite(9, 500, 20);
+            break;
+        case 1:
+            move_sprite(7, 142, 20);
+            move_sprite(8, 500, 20);
+            move_sprite(9, 500, 20);
+            break;
+        case 0:
+            move_sprite(7, 500, 20);
+            move_sprite(8, 500, 20);
+            move_sprite(9, 500, 20);
+            break;
+    }
+}
+
+UINT8 sorteio(UINT8 min, UINT8 max){
+    UINT8 valor = abs(rand()%max+1)+min;
+    
+    return valor;
 }
 
 

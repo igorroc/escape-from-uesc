@@ -8,7 +8,7 @@
    Section       : 
    Bank          : 0
    Map size      : 20 x 18
-   Tile set      : D:\HD Documentos\1- UESC\Semestre 2\LinguagemDeProgramacao2\Jogo\Escape_From_UESC_1.5\Projeto\assets\fases\biblioteca\Biblioteca_tiles.gbr
+   Tile set      : C:\Users\igor_\Documents\1 - UESC\Semestre 2\Linguagem de Programacao 2\Jogo\Escape\Escape_From_UESC_1.7\Projeto\assets\background\Tiles_Mapa.gbr
    Plane count   : 1 plane (8 bits)
    Plane order   : Tiles are continues
    Tile offset   : 0

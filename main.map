@@ -18,61 +18,95 @@ AREA .  .ABS.
 		s__SFR	0000
 		l__GSINITTAIL	0001
 		l__BSS	005E
-		l__HOME	01AC
 		l__HEADER	01E1
+		l__HOME	01E3
 		s__CODE	0200
-		l__BASE	02FF
-		l__DATA	09B7
-		l__CODE	1E1F
-		s__HOME	201F
-		s__BASE	21CB
-		s__LIT	24CA
-		s__GSINIT	24CA
-		l__GSINIT	3918
-		s__GSINITTAIL	5DE2
-		s__GSFINAL	5DE3
+		l__BASE	0335
+		l__DATA	0881
+		l__GSINIT	3138
+		l__CODE	48A3
+		s__HOME	4AA3
+		s__BASE	4C86
+		s__LIT	4FBB
+		s__GSINIT	4FBB
+		s__GSINITTAIL	80F3
+		s__GSFINAL	80F4
 		.OAM	C000
 		s__DATA	C0A0
-		s__BSS	CA57
-		s__HEAP	CAB5
-		s__BSEG	CAB5
-		s__ISEG	CAB5
-		s__XSEG	CAB5
-		s__OVERLAY	CAB5
+		s__BSS	C921
+		s__HEAP	C97F
+		s__BSEG	C97F
+		s__ISEG	C97F
+		s__XSEG	C97F
+		s__OVERLAY	C97F
 		.STACK	E000
 		.refresh_OAM	FF80
 		l__SFR	10000
 AREA _CODE
 	RADIX HEX
 	BASE 0200
-	SIZE 1E1F
+	SIZE 48A3
 	ATTRIB REL CON
 	GLOBALS
 		_fadeout	0200
-		_fadein	0281
-		_iniciar_som	02EB
-		_som_pulo	02F8
-		_som_soco	030D
-		_som_confirmar	0322
-		_som_sair	0337
-		_colisao_chao	034C
-		_colisao_16bits	0367
-		_pular	03AB
-		_mover_personagem_lado	04CB
-		_mover_personagem_cima	0B54
-		_mover_mochila_lado	0D77
-		_mover_sprites	0DEE
-		_verifica_biblioteca	0E58
-		_intro	0E92
-		_intro_saida	1203
-		_biblioteca	12F2
-		_biblioteca_saida	141F
-		_pontos	14CA
-		_pontos_saida	159D
-		_verifica_uesc	1615
-		_main	16D0
-		_rand	1FF4
-		_randw	1FF4
+		_Personagem	0281
+		_vida	04A1
+		_umreal	04B1
+		_letras	0521
+		_fadein	0771
+		_iniciar_som	07DB
+		_som_pulo	07E8
+		_som_soco	07FD
+		_som_confirmar	0812
+		_som_sair	0827
+		_colisao_chao	083C
+		_colisao_plataforma	0857
+		_colisao_16bits	088F
+		_colisao_8bits	08D3
+		_pular	0917
+		_mover_personagem_lado	0A4D
+		_mover_personagem_cima	10EB
+		_mover_mochila_lado	131C
+		_mover_sprites	1393
+		_setup_plantas	13FD
+		_remover_plantas	1639
+		_animacao_moeda	16CA
+		_verifica_guarita	194C
+		_verifica_biblioteca	1980
+		_verifica_jorge	19BA
+		_verifica_exatas	19F4
+		_verifica_adonias	1A2E
+		_verifica_ru	1A68
+		_verifica_borda	1A9B
+		_verifica_vidas	1ADB
+		_sorteio	1BD5
+		_intro	1C0C
+		_intro_saida	2040
+		_biblioteca	212F
+		_biblioteca_saida	22DE
+		_jorge	2389
+		_jorge_saida	25B9
+		_ru	2697
+		_ru_saida	26EE
+		_pontos	2711
+		_pontos_saida	2878
+		_verifica_uesc	2901
+		_verifica_uesc_saida	29BC
+		_verifica_moedas	2A01
+		_game_over	2A4C
+		_ru_fechado	2C86
+		_ru_fechado_saida	2DB4
+		_confirmar_ru	2E9E
+		_sem_moedas	2F29
+		_sem_moedas_saida	30AD
+		_ru_timer	3147
+		_escrever	334E
+		_limpar	3430
+		_main	345D
+		_rand	4A2A
+		_randw	4A2A
+		_time	4A55
+		_abs	4A7B
 AREA _HEADER
 	RADIX HEX
 	BASE 0000
@@ -82,189 +116,198 @@ AREA _HEADER
 		_exit	01D2
 AREA _HOME
 	RADIX HEX
-	BASE 201F
-	SIZE 01AC
+	BASE 4AA3
+	SIZE 01E3
 	ATTRIB REL CON
 	GLOBALS
-		.set_mode	201F
-		.remove_VBL	202F
-		.remove_LCD	2035
-		.remove_TIM	203B
-		.remove_SIO	2041
-		.remove_JOY	2047
-		.add_VBL	204D
-		.add_LCD	2053
-		.add_TIM	2059
-		.add_SIO	205F
-		.add_JOY	2065
-		.remove_int	206B
-		.add_int	208B
-		.wait_vbl_done	20A7
-		_wait_vbl_done	20A7
-		_display_off	20BE
-		.display_off	20BE
-		.serial_IO	20DF
-		_mode	210E
-		_get_mode	2117
-		_enable_interrupts	211C
-		_disable_interrupts	211E
-		_reset	2120
-		.reset	2120
-		_set_interrupts	2126
-		_remove_VBL	2131
-		_remove_LCD	213C
-		_remove_TIM	2147
-		_remove_SIO	2152
-		_remove_JOY	215D
-		_add_VBL	2168
-		_add_LCD	2173
-		_add_TIM	217E
-		_add_SIO	2189
-		_add_JOY	2194
-		_clock	219F
-		__printTStates	21A8
-		banked_call	21A9
-		banked_ret	21C2
+		.set_mode	4AA3
+		.remove_VBL	4AB3
+		.remove_LCD	4AB9
+		.remove_TIM	4ABF
+		.remove_SIO	4AC5
+		.remove_JOY	4ACB
+		.add_VBL	4AD1
+		.add_LCD	4AD7
+		.add_TIM	4ADD
+		.add_SIO	4AE3
+		.add_JOY	4AE9
+		.remove_int	4AEF
+		.add_int	4B0F
+		.wait_vbl_done	4B2B
+		_wait_vbl_done	4B2B
+		_display_off	4B42
+		.display_off	4B42
+		.serial_IO	4B63
+		_mode	4B92
+		_get_mode	4B9B
+		_enable_interrupts	4BA0
+		_disable_interrupts	4BA2
+		_reset	4BA4
+		.reset	4BA4
+		_set_interrupts	4BAA
+		_remove_VBL	4BB5
+		_remove_LCD	4BC0
+		_remove_TIM	4BCB
+		_remove_SIO	4BD6
+		_remove_JOY	4BE1
+		_add_VBL	4BEC
+		_add_LCD	4BF7
+		_add_TIM	4C02
+		_add_SIO	4C0D
+		_add_JOY	4C18
+		_clock	4C23
+		__printTStates	4C2C
+		banked_call	4C2D
+		banked_ret	4C46
+		_strlen	4C4F
 AREA _BASE
 	RADIX HEX
-	BASE 21CB
-	SIZE 02FF
+	BASE 4C86
+	SIZE 0335
 	ATTRIB REL CON
 	GLOBALS
-		.set_sprite_prop	21CB
-		_set_sprite_prop	21D8
-		_initrand	21E3
-		.initrand	21E5
-		.padup	21EE
-		_waitpadup	21EE
-		.jpad	21FE
-		.wait_pad	222B
-		_joypad	2232
-		_waitpad	2237
-		.mv_sprite	2241
-		_move_sprite	2250
-		__modslong	225D
-		__divslong	225D
-		__mulslong	225D
-		__divschar	225E
-		__modschar	226A
-		__divsint	2275
-		__modsint	2286
-		__divuchar	2295
-		__moduchar	22A1
-		__divuint	22AC
-		__moduint	22BD
-		.mod8	22CC
-		.div8	22CC
-		.mod16	22D4
-		.div16	22D4
-		.modu8	230A
-		.divu8	230A
-		.modu16	230D
-		.divu16	230D
-		_set_win_data	234A
-		_set_bkg_data	234A
-		_set_sprite_data	2397
-		_move_bkg	23C6
-		.set_sprite_tile	23CF
-		_set_sprite_tile	23DC
-		.delay	23E7
-		_delay	2421
-		.copy_vram	242A
-		_get_data	2439
-		_set_data	2439
-		_set_bkg_tiles	244C
-		.set_xy_wtt	2460
-		.set_xy_btt	2471
-		.set_xy_tt	2480
-		_set_tiles	24B1
+		.set_sprite_prop	4C86
+		_set_sprite_prop	4C93
+		_initrand	4C9E
+		.initrand	4CA0
+		.padup	4CA9
+		_waitpadup	4CA9
+		.jpad	4CB9
+		.wait_pad	4CE6
+		_joypad	4CED
+		_waitpad	4CF2
+		__mulschar	4CFC
+		__muluchar	4CFC
+		__mulsint	4D08
+		__muluint	4D08
+		.mulu16	4D1C
+		.mul16	4D1C
+		.mv_sprite	4D32
+		_move_sprite	4D41
+		__modslong	4D4E
+		__divslong	4D4E
+		__mulslong	4D4E
+		__divschar	4D4F
+		__modschar	4D5B
+		__divsint	4D66
+		__modsint	4D77
+		__divuchar	4D86
+		__moduchar	4D92
+		__divuint	4D9D
+		__moduint	4DAE
+		.mod8	4DBD
+		.div8	4DBD
+		.mod16	4DC5
+		.div16	4DC5
+		.modu8	4DFB
+		.divu8	4DFB
+		.modu16	4DFE
+		.divu16	4DFE
+		_set_win_data	4E3B
+		_set_bkg_data	4E3B
+		_set_sprite_data	4E88
+		_move_bkg	4EB7
+		.set_sprite_tile	4EC0
+		_set_sprite_tile	4ECD
+		.delay	4ED8
+		_delay	4F12
+		.copy_vram	4F1B
+		_get_data	4F2A
+		_set_data	4F2A
+		_set_bkg_tiles	4F3D
+		.set_xy_wtt	4F51
+		.set_xy_btt	4F62
+		.set_xy_tt	4F71
+		_set_tiles	4FA2
 AREA _LIT
 	RADIX HEX
-	BASE 24CA
+	BASE 4FBB
 	SIZE 0000
 	ATTRIB REL CON
 AREA _GSINIT
 	RADIX HEX
-	BASE 24CA
-	SIZE 3918
+	BASE 4FBB
+	SIZE 3138
 	ATTRIB REL CON
 	GLOBALS
-		gsinit	24CA
+		gsinit	4FBB
 AREA _GSINITTAIL
 	RADIX HEX
-	BASE 5DE2
+	BASE 80F3
 	SIZE 0001
 	ATTRIB REL CON
 AREA _GSFINAL
 	RADIX HEX
-	BASE 5DE3
+	BASE 80F4
 	SIZE 0000
 	ATTRIB REL CON
 AREA _DATA
 	RADIX HEX
 	BASE C0A0
-	SIZE 09B7
+	SIZE 0881
 	ATTRIB REL CON
 	GLOBALS
-		_Personagem	C0A0
-		_vida	C2C0
-		_mapamenu	C2D0
-		_tilesbackgroundCima	C691
-		_Itens	C711
-		_letras	C7D1
-		_GRAVIDADE	CA21
-		_CHAO	CA22
-		_rolagem	CA23
-		_player	CA25
-		_livro	CA37
-		_background	CA55
+		_mapamenu	C0A0
+		_tilesbackgroundCima	C461
+		_mapa_jorge	C501
+		_plantas_chave	C669
+		_mapa_biblioteca	C6A9
+		_Itens	C811
+		_GRAVIDADE	C8D1
+		_CHAO	C8D2
+		_rolagem	C8D3
+		_player	C8D5
+		_livro	C8EC
+		_planta	C8F2
+		_background	C916
+		_moeda	C918
 AREA _BSS
 	RADIX HEX
-	BASE CA57
+	BASE C921
 	SIZE 005E
 	ATTRIB REL CON
 	GLOBALS
-		__cpu	CA57
-		.mode	CA58
-		__io_out	CA59
-		__io_in	CA5A
-		__io_status	CA5B
-		.vbl_done	CA5C
-		__current_bank	CA5D
-		_sys_time	CA5E
-		.sys_time	CA5E
-		.int_0x40	CA60
-		.int_0x48	CA70
-		.int_0x50	CA80
-		.int_0x58	CA90
-		.int_0x60	CAA0
-		.randhi	CAB0
-		.randlo	CAB1
+		__cpu	C921
+		.mode	C922
+		__io_out	C923
+		__io_in	C924
+		__io_status	C925
+		.vbl_done	C926
+		__current_bank	C927
+		_sys_time	C928
+		.sys_time	C928
+		.int_0x40	C92A
+		.int_0x48	C93A
+		.int_0x50	C94A
+		.int_0x58	C95A
+		.int_0x60	C96A
+		.randhi	C97A
+		.randlo	C97B
 AREA _HEAP
 	RADIX HEX
-	BASE CAB5
+	BASE C97F
 	SIZE 0000
 	ATTRIB REL CON
 	GLOBALS
-		_malloc_heap_start	CAB5
+		_malloc_heap_start	C97F
 AREA _OVERLAY
 	RADIX HEX
-	BASE CAB5
+	BASE C97F
 	SIZE 0000
 	ATTRIB REL CON
 AREA _ISEG
 	RADIX HEX
-	BASE CAB5
+	BASE C97F
 	SIZE 0000
 	ATTRIB REL CON
 AREA _BSEG
 	RADIX HEX
-	BASE CAB5
+	BASE C97F
 	SIZE 0000
 	ATTRIB REL CON
 AREA _XSEG
 	RADIX HEX
-	BASE CAB5
+	BASE C97F
 	SIZE 0000
 	ATTRIB REL CON
 AREA _SFR
@@ -332,7 +375,7 @@ MODULES
 	FILE c:\gbdk\lib/small/asxxxx/gb/crt0.o
 		NAME Runtime
 	FILE main.o
-		NAME lcc241520
+		NAME lcc71640
 LIBRARIES
 	LIBRARY c:\gbdk\lib/small/asxxxx/gb/gb.lib
 		MODULE sfr.o
@@ -342,10 +385,16 @@ LIBRARIES
 		MODULE rand.o
 	LIBRARY c:\gbdk\lib/small/asxxxx/gb/gb.lib
 		MODULE pad.o
+	LIBRARY c:\gbdk\lib/small/asxxxx/gbz80/gbz80.lib
+		MODULE mul.o
 	LIBRARY c:\gbdk\lib/small/asxxxx/gb/gb.lib
 		MODULE mv_spr.o
 	LIBRARY c:\gbdk\lib/small/asxxxx/gbz80/gbz80.lib
+		MODULE time.o
+	LIBRARY c:\gbdk\lib/small/asxxxx/gbz80/gbz80.lib
 		MODULE div.o
+	LIBRARY c:\gbdk\lib/small/asxxxx/gbz80/gbz80.lib
+		MODULE abs.o
 	LIBRARY c:\gbdk\lib/small/asxxxx/gb/gb.lib
 		MODULE set_data.o
 	LIBRARY c:\gbdk\lib/small/asxxxx/gb/gb.lib
@@ -354,6 +403,8 @@ LIBRARIES
 		MODULE set_spr.o
 	LIBRARY c:\gbdk\lib/small/asxxxx/gb/gb.lib
 		MODULE delay.o
+	LIBRARY c:\gbdk\lib/small/asxxxx/gbz80/gbz80.lib
+		MODULE strlen.o
 	LIBRARY c:\gbdk\lib/small/asxxxx/gb/gb.lib
 		MODULE cpy_data.o
 	LIBRARY c:\gbdk\lib/small/asxxxx/gb/gb.lib
