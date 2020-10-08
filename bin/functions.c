@@ -5,22 +5,36 @@
 
 #include "struct_player.c"
 
+// --------------- FUNCOES DE TELA ---------------
 
 void fadeout(UINT8 tempo);
 void fadein(UINT8 tempo);
 
-int colisao_chao(UINT8);
-void pular();
+// --------------- FUNCOES DE SOM ---------------
+
 void iniciar_som();
 void som_pulo();
-void som_confirmar();
 void som_soco();
+void som_confirmar();
+void som_sair();
+
+// ------------ FUNCOES DE MOVIMENTO ------------
+
+int colisao_chao(UINT8);
+int colisao_16bits(UINT8, UINT8, UINT8, UINT8);//RETORNA 1 SE COLIDIU, 0 SE NAO
+void pular();
 void mover_personagem_cima();
 void mover_personagem_lado();
 void mover_mochila_lado();
 void mover_sprites(UINT8 id, UINT8 x, UINT8 y);
 
+// ------------ FUNCOES DE VERIFICACAO ------------
 
+UINT8 verifica_biblioteca();
+
+// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+// --------------- FUNCOES DE TELA ---------------
 
 void fadeout(UINT8 tempo){
     int i;
@@ -61,44 +75,7 @@ void fadein(UINT8 tempo){
     }
 }
 
-
-int colisao_chao(UINT8 y){
-    if(y >= CHAO){
-        return CHAO;
-    }
-    return -1;
-}
-
-void pular(){
-    INT8 possivel_y;
-
-    if(player.pulando == FALSE){
-        player.pulando = TRUE;
-        player.velocidade_y = 15;
-    }
-
-    if(player.direcao == 1){
-        set_sprite_tile(player.id, 20);
-        set_sprite_tile(player.id+1, 21);
-        set_sprite_tile(player.id+2, 22);
-        set_sprite_tile(player.id+3, 23);
-    }else{
-        set_sprite_tile(player.id, 22);
-        set_sprite_tile(player.id+1, 23);
-        set_sprite_tile(player.id+2, 20);
-        set_sprite_tile(player.id+3, 21);
-    }
-
-    player.velocidade_y += GRAVIDADE;
-    player.y -= player.velocidade_y;
-
-    possivel_y = (INT8)colisao_chao(player.y);
-
-
-    if(possivel_y != -1){
-        player.pulando = FALSE;
-    }
-}
+// --------------- FUNCOES DE SOM ---------------
 
 void iniciar_som(){
 
@@ -187,6 +164,55 @@ void som_sair(){
     NR13_REG = 0x00;
 
     NR14_REG = 0x87;
+}
+
+// ------------ FUNCOES DE MOVIMENTO ------------
+
+int colisao_chao(UINT8 y){
+    if(y >= CHAO){
+        return CHAO;
+    }
+    return -1;
+}
+
+int colisao_16bits(UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2){
+    if(x1 >= x2 - 16 && x1 <= x2 + 16){
+        if(y1 >= y2 - 16 && y1 < y2 + 16){
+            return 1;
+        }
+    }
+    return 0;
+}
+
+void pular(){
+    INT8 possivel_y;
+
+    if(player.pulando == FALSE){
+        player.pulando = TRUE;
+        player.velocidade_y = 15;
+    }
+
+    if(player.direcao == 1){
+        set_sprite_tile(player.id, 20);
+        set_sprite_tile(player.id+1, 21);
+        set_sprite_tile(player.id+2, 22);
+        set_sprite_tile(player.id+3, 23);
+    }else{
+        set_sprite_tile(player.id, 22);
+        set_sprite_tile(player.id+1, 23);
+        set_sprite_tile(player.id+2, 20);
+        set_sprite_tile(player.id+3, 21);
+    }
+
+    player.velocidade_y += GRAVIDADE;
+    player.y -= player.velocidade_y;
+
+    possivel_y = (INT8)colisao_chao(player.y);
+
+
+    if(possivel_y != -1){
+        player.pulando = FALSE;
+    }
 }
 
 void mover_personagem_lado(){
@@ -402,13 +428,13 @@ void mover_mochila_lado(){
     switch (joypad()){
         case J_LEFT:
             if(player.x >= 9){
-                player.x -= 3;
+                player.x -= 3 + player.pontos;
             }
             break;
 
         case J_RIGHT:
             if(player.x <= 150){
-                player.x += 3;
+                player.x += 3 + player.pontos;
             }
             break;
 
@@ -421,5 +447,15 @@ void mover_sprites(UINT8 id, UINT8 x, UINT8 y){
     move_sprite(id+2, x+8, y); // direita superior
     move_sprite(id+3, x+8, y+8); // direita inferior
 }
+
+// ------------ FUNCOES DE VERIFICACAO ------------
+
+UINT8 verifica_biblioteca(){
+    if(((background.x+player.x) >= 15 && (background.x+player.x) <= 38) && ((background.y+player.y) >= 52 && (background.y+player.y) <= 55)){
+        return 1;
+    }
+    return 0;
+}
+
 
 #endif

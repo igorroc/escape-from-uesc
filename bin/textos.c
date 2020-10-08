@@ -29,11 +29,25 @@
 #define X 69
 #define Y 70
 #define Z 71
+#define ponto 72
+#define zero 73
+#define um 74
+#define dois 75
+#define tres 76
+#define quatro 77
+#define cinco 78
+#define seis 79
+#define sete 80
+#define oito 81
+#define nove 82
 
 void intro();
 void intro_saida();
 void biblioteca();
 void biblioteca_saida();
+void pontos();
+void pontos_saida();
+void verifica_uesc();
 
 void intro(){
     int x = 200;
@@ -162,6 +176,53 @@ void biblioteca_saida(){
     move_sprite(27, 250, 250);
     move_sprite(28, 250, 250);
     move_sprite(29, 250, 250);
+}
+
+void pontos(){
+    set_sprite_tile(20, P);
+    set_sprite_tile(21, O);
+    set_sprite_tile(22, N);
+    set_sprite_tile(23, T);
+    set_sprite_tile(24, O);
+    set_sprite_tile(25, S);
+    set_sprite_tile(26, ponto);
+
+    move_sprite(20, 10, 150);
+    move_sprite(21, 10+8, 150);
+    move_sprite(22, 10+16, 150);
+    move_sprite(23, 10+24, 150);
+    move_sprite(24, 10+32, 150);
+    move_sprite(25, 10+40, 150);
+    move_sprite(26, 10+48, 150);
+}
+
+void pontos_saida(){
+    move_sprite(20, 500, 500);
+    move_sprite(21, 500, 500);
+    move_sprite(22, 500, 500);
+    move_sprite(23, 500, 500);
+    move_sprite(24, 500, 500);
+    move_sprite(25, 500, 500);
+    move_sprite(26, 500, 500);
+}
+
+void verifica_uesc(){
+    if(player.UESC[0] == TRUE){
+        set_sprite_tile(30, U);
+        move_sprite(30, 20, 20);
+    }
+    if(player.UESC[1] == TRUE){
+        set_sprite_tile(31, E);
+        move_sprite(31, 20+8, 20);
+    }
+    if(player.UESC[2] == TRUE){
+        set_sprite_tile(32, S);
+        move_sprite(32, 20+16, 20);
+    }
+    if(player.UESC[3] == TRUE){
+        set_sprite_tile(33, C);
+        move_sprite(33, 20+24, 20);
+    }
 }
 
 #endif
