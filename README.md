@@ -104,4 +104,3 @@ Todos os membros contribuíram em todas as áreas citadas abaixo, porém cada um
 **Igor Lima Rocha:** Criação da história e fases, programação, desenho de sprites, apresentação.
 **Fernanda Caroline Leite:** Criação da história e fases, programação, relatório, desenho de sprites, apresentação.
 **Maria Gabriella Araújo Oliveira:** Criação da história e fases, slides, relatório, apresentação.
-
