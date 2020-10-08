@@ -22,7 +22,7 @@ Quando Igor decidiu entrar na UESC não imaginava o que esperava por ele. Muito 
 
 ### O JOGO
 
-### Mapa Principal
+#### Mapa Principal
 
 ![Torre](./relatorio/image2.png)
 
