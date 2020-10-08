@@ -6,7 +6,7 @@
 
 * [Igor Lima Rocha](https://github.com/IgorRoc)
 * [Fernanda Caroline Leite](https://github.com/FekLeite)
-* [Maria Gabriella Araújo Oliveira](https://github.com/IgorRoc)
+* [Maria Gabriella Araújo Oliveira](mailto:maria0gabriella@gmail.com)
 
 ### NOME DO JOGO
 
