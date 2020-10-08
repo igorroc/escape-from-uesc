@@ -200,7 +200,6 @@ void mover_personagem(){
                 som_agachar();
                 player.agachando = TRUE;
             }
-            player.velocidade_y--;
             set_sprite_tile(player.id, 28);
             set_sprite_tile(player.id+1, 29);
             set_sprite_tile(player.id+2, 30);
