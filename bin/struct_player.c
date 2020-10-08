@@ -16,6 +16,7 @@ typedef struct Player{
     INT8 piscando; //Contador para a animacao de piscar, tempo padrao: 100
     INT8 pulando; //True quando estiver no ar
     INT8 CD_pulo; //Cooldown do pulo, tempo padrao: 15
+    INT8 pontos;
 }_Player;
 
     _Player player;

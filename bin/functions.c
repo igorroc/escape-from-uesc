@@ -5,14 +5,62 @@
 
 #include "struct_player.c"
 
+
+void fadeout(UINT8 tempo);
+void fadein(UINT8 tempo);
+
 int colisao_chao(UINT8);
 void pular();
 void iniciar_som();
 void som_pulo();
-void som_agachar();
+void som_confirmar();
 void som_soco();
-void mover_personagem();
-int detectou_colisao();
+void mover_personagem_cima();
+void mover_personagem_lado();
+void mover_mochila_lado();
+void mover_sprites(UINT8 id, UINT8 x, UINT8 y);
+
+
+
+void fadeout(UINT8 tempo){
+    int i;
+    for(i = 0; i < 4; i++){
+        switch (i){
+            case 0:
+                BGP_REG = 0xE4; // TELA NORMAL
+                break;
+            case 1:
+                BGP_REG = 0xF9; // TELA MAIS ESCURA
+                break;
+            case 2:
+                BGP_REG = 0xFE; // TELA MAIS MAIS ESCURA
+                break;
+            case 3:
+                BGP_REG = 0xFF; // TELA PRETA
+                break;
+        }
+        delay(tempo);
+    }
+}
+
+void fadein(UINT8 tempo){
+    int i;
+    for(i = 0; i < 3; i++){
+        switch (i){
+            case 0:
+                BGP_REG = 0xFE; // TELA PRETA
+                break;
+            case 1:
+                BGP_REG = 0xF9; // TELA MAIS CLARA
+                break;
+            case 2:
+                BGP_REG = 0xE4; // TELA NORMAL
+                break;
+        }
+        delay(tempo);
+    }
+}
+
 
 int colisao_chao(UINT8 y){
     if(y >= CHAO){
@@ -20,7 +68,6 @@ int colisao_chao(UINT8 y){
     }
     return -1;
 }
-
 
 void pular(){
     INT8 possivel_y;
@@ -41,20 +88,20 @@ void pular(){
         set_sprite_tile(player.id+2, 20);
         set_sprite_tile(player.id+3, 21);
     }
-      
+
     player.velocidade_y += GRAVIDADE;
     player.y -= player.velocidade_y;
-    
+
     possivel_y = (INT8)colisao_chao(player.y);
 
-    
+
     if(possivel_y != -1){
         player.pulando = FALSE;
     }
 }
 
 void iniciar_som(){
-    
+
     // these registers must be in this specific order!
     NR52_REG = 0x80; // is 1000 0000 in binary and turns on sound
     NR50_REG = 0x77; // sets the volume for both left and right channel just set to max 0x77
@@ -70,7 +117,7 @@ void som_pulo(){
     // 3	Sweep Direction (1: decrease, 0: increase)
     // 2-0	Sweep RtShift amount (if 0, sweeping is off)
     // 0001 0110 is 0x16, sweet time 1, sweep direction increase, shift ammount per step 110 (6 decimal)
-    NR10_REG = 0x16; 
+    NR10_REG = 0x16;
 
     // chanel 1 register 1: Wave pattern duty and sound length
     // Channels 1 2 and 4
@@ -84,55 +131,14 @@ void som_pulo(){
     // 7-4	(Initial) Channel Volume
     // 3	Volume sweep direction (0: down; 1: up)
     // 2-0	Length of each step in sweep (if 0, sweeping is off)
-    // NOTE: each step is n/64 seconds long, where n is 1-7	
+    // NOTE: each step is n/64 seconds long, where n is 1-7
     // 0111 0011 is 0x73, volume 7, sweep down, step length 3
-    NR12_REG = 0x73;  
+    NR12_REG = 0x73;
 
     // chanel 1 register 3: Frequency LSbs (Least Significant bits) and noise options
     // for Channels 1 2 and 3
     // 7-0	8 Least Significant bits of frequency (3 Most Significant Bits are set in register 4)
-    NR13_REG = 0x00;   
-
-    // chanel 1 register 4: Playback and frequency MSbs
-    // Channels 1 2 3 and 4
-    // 7	Initialize (trigger channel start, AKA channel INIT) (Write only)
-    // 6	Consecutive select/length counter enable (Read/Write). When "0", regardless of the length of data on the NR11 register, sound can be produced consecutively.  When "1", sound is generated during the time period set by the length data contained in register NR11.  After the sound is ouput, the Sound 1 ON flag, at bit 0 of register NR52 is reset.
-    // 5-3	Unused
-    // 2-0	3 Most Significant bits of frequency
-    // 1100 0011 is 0xC3, initialize, no consecutive, frequency = MSB + LSB = 011 0000 0000 = 0x300
-    NR14_REG = 0xC3;
-}
-
-void som_agachar(){
-    // see https://github.com/bwhitman/pushpin/blob/master/src/gbsound.txt
-    // chanel 1 register 0, Frequency sweep settings
-    // 7	Unused
-    // 6-4	Sweep time(update rate) (if 0, sweeping is off)
-    // 3	Sweep Direction (1: decrease, 0: increase)
-    // 2-0	Sweep RtShift amount (if 0, sweeping is off)
-    // 0001 0110 is 0x16, sweet time 1, sweep direction increase, shift ammount per step 110 (6 decimal)
-    NR10_REG = 0x1E; 
-
-    // chanel 1 register 1: Wave pattern duty and sound length
-    // Channels 1 2 and 4
-    // 7-6	Wave pattern duty cycle 0-3 (12.5%, 25%, 50%, 75%), duty cycle is how long a quadrangular  wave is "on" vs "of" so 50% (2) is both equal.
-    // 5-0 sound length (higher the number shorter the sound)
-    // 01000000 is 0x40, duty cycle 1 (25%), wave length 0 (long)
-    NR11_REG = 0x40;
-
-    // chanel 1 register 2: Volume Envelope (Makes the volume get louder or quieter each "tick")
-    // On Channels 1 2 and 4
-    // 7-4	(Initial) Channel Volume
-    // 3	Volume sweep direction (0: down; 1: up)
-    // 2-0	Length of each step in sweep (if 0, sweeping is off)
-    // NOTE: each step is n/64 seconds long, where n is 1-7	
-    // 0111 0011 is 0x73, volume 7, sweep down, step length 3
-    NR12_REG = 0x73;  
-
-    // chanel 1 register 3: Frequency LSbs (Least Significant bits) and noise options
-    // for Channels 1 2 and 3
-    // 7-0	8 Least Significant bits of frequency (3 Most Significant Bits are set in register 4)
-    NR13_REG = 0x00;   
+    NR13_REG = 0x00;
 
     // chanel 1 register 4: Playback and frequency MSbs
     // Channels 1 2 3 and 4
@@ -145,47 +151,45 @@ void som_agachar(){
 }
 
 void som_soco(){
-    // see https://github.com/bwhitman/pushpin/blob/master/src/gbsound.txt
-    // chanel 1 register 0, Frequency sweep settings
-    // 7	Unused
-    // 6-4	Sweep time(update rate) (if 0, sweeping is off)
-    // 3	Sweep Direction (1: decrease, 0: increase)
-    // 2-0	Sweep RtShift amount (if 0, sweeping is off)
-    // 0010 1111 is 0x16, sweet time 1, sweep direction increase, shift ammount per step 110 (6 decimal)
+    
     NR10_REG = 0x2F;
 
-    // chanel 1 register 1: Wave pattern duty and sound length
-    // Channels 1 2 and 4
-    // 7-6	Wave pattern duty cycle 0-3 (12.5%, 25%, 50%, 75%), duty cycle is how long a quadrangular  wave is "on" vs "of" so 50% (2) is both equal.
-    // 5-0 sound length (higher the number shorter the sound)
-    // 0100 1000 is 0x40, duty cycle 1 (25%), wave length 0 (long)
     NR11_REG = 0x48;
 
-    // chanel 1 register 2: Volume Envelope (Makes the volume get louder or quieter each "tick")
-    // On Channels 1 2 and 4
-    // 7-4	(Initial) Channel Volume
-    // 3	Volume sweep direction (0: down; 1: up)
-    // 2-0	Length of each step in sweep (if 0, sweeping is off)
-    // NOTE: each step is n/64 seconds long, where n is 1-7	
-    // 0111 0011 is 0x73, volume 7, sweep down, step length 3
-    NR12_REG = 0x73;  
+    NR12_REG = 0x73;
 
-    // chanel 1 register 3: Frequency LSbs (Least Significant bits) and noise options
-    // for Channels 1 2 and 3
-    // 7-0	8 Least Significant bits of frequency (3 Most Significant Bits are set in register 4)
-    NR13_REG = 0x00;   
+    NR13_REG = 0x00;
 
-    // chanel 1 register 4: Playback and frequency MSbs
-    // Channels 1 2 3 and 4
-    // 7	Initialize (trigger channel start, AKA channel INIT) (Write only)
-    // 6	Consecutive select/length counter enable (Read/Write). When "0", regardless of the length of data on the NR11 register, sound can be produced consecutively.  When "1", sound is generated during the time period set by the length data contained in register NR11.  After the sound is ouput, the Sound 1 ON flag, at bit 0 of register NR52 is reset.
-    // 5-3	Unused
-    // 2-0	3 Most Significant bits of frequency
-    // 1100 0011 is 0xC3, initialize, no consecutive, frequency = MSB + LSB = 011 0000 0000 = 0x300
     NR14_REG = 0xC3;
 }
 
-void mover_personagem(){
+void som_confirmar(){
+    
+    NR10_REG = 0x2F;
+
+    NR11_REG = 0x01;
+
+    NR12_REG = 0xF3;
+
+    NR13_REG = 0x00;
+
+    NR14_REG = 0x87;
+}
+
+void som_sair(){
+    
+    NR10_REG = 0x1B;
+
+    NR11_REG = 0x01;
+
+    NR12_REG = 0xF3;
+
+    NR13_REG = 0x00;
+
+    NR14_REG = 0x87;
+}
+
+void mover_personagem_lado(){
     switch (joypad()){
         case J_UP:
             if(player.pulando == FALSE && player.CD_pulo == 0){
@@ -197,13 +201,20 @@ void mover_personagem(){
 
         case J_DOWN:
             if(player.agachando == FALSE){
-                som_agachar();
                 player.agachando = TRUE;
             }
-            set_sprite_tile(player.id, 28);
-            set_sprite_tile(player.id+1, 29);
-            set_sprite_tile(player.id+2, 30);
-            set_sprite_tile(player.id+3, 31);
+
+            if(player.direcao == 1){
+                set_sprite_tile(player.id, 28);
+                set_sprite_tile(player.id+1, 29);
+                set_sprite_tile(player.id+2, 30);
+                set_sprite_tile(player.id+3, 31);
+            }else{
+                set_sprite_tile(player.id, 30);
+                set_sprite_tile(player.id+1, 31);
+                set_sprite_tile(player.id+2, 28);
+                set_sprite_tile(player.id+3, 29);
+            }
             break;
 
         case J_LEFT:
@@ -216,7 +227,7 @@ void mover_personagem(){
                 player.direcao = -1;
             }
             rolagem = -1;
-            
+
             if(player.passo == 1){
                 set_sprite_tile(player.id, 14);
                 set_sprite_tile(player.id+1, 15);
@@ -230,16 +241,16 @@ void mover_personagem(){
                 set_sprite_tile(player.id+3, 17);
                 player.passo = 1;
             }
-            
+
             break;
 
         case J_RIGHT:
             player.x++;
             if(player.direcao == -1){
-                set_sprite_prop(player.id, S_FLIPX);
-                set_sprite_prop(player.id+1, S_FLIPX);
-                set_sprite_prop(player.id+2, S_FLIPX);
-                set_sprite_prop(player.id+3, S_FLIPX);
+                set_sprite_prop(player.id, 1);
+                set_sprite_prop(player.id+1, 1);
+                set_sprite_prop(player.id+2, 1);
+                set_sprite_prop(player.id+3, 1);
                 player.direcao = 1;
             }
             rolagem = 1;
@@ -279,9 +290,9 @@ void mover_personagem(){
                 set_sprite_tile(player.id+2, 24);
                 set_sprite_tile(player.id+3, 25);
             }
-            
+
             break;
-            
+
         default:
             rolagem = 0;
             player.piscando++;
@@ -289,13 +300,13 @@ void mover_personagem(){
             player.socando = FALSE;
             if(player.pulando == 0){
                 if(player.direcao == 1){
-                    if(player.piscando == 20){
+                    if(player.piscando == 100){
                         player.piscando = 0;
                         set_sprite_tile(player.id, 8);
                         set_sprite_tile(player.id+1, 9);
                         set_sprite_tile(player.id+2, 10);
                         set_sprite_tile(player.id+3, 11);
-                    }else if(player.piscando >= 17){
+                    }else if(player.piscando >= 97){
                         set_sprite_tile(player.id, 4);
                         set_sprite_tile(player.id+1, 5);
                         set_sprite_tile(player.id+2, 6);
@@ -329,13 +340,86 @@ void mover_personagem(){
     }
 }
 
-int detectou_colisao(){
-    if(player.x <= inimigo.x + 8 && player.x +8 >= inimigo.x){
-        if(player.y <= inimigo.y +  8 && player.y + 8>= inimigo.y){
-            return 1;
-        }
+void mover_personagem_cima(){
+    switch (joypad()){
+        case J_UP: 
+            set_sprite_tile(player.id, 32);
+            set_sprite_prop(player.id, 0);
+            if(player.y + background.y >= 24){
+                if(player.y >= 16){
+                    player.y -= 3;
+                }
+            }
+            if(background.y > 3){
+                background.y -= 3;
+                move_bkg(background.x, background.y);
+            }
+            break;
+        
+        case J_DOWN: 
+            set_sprite_tile(player.id, 32);
+            set_sprite_prop(player.id, 0);
+            set_sprite_prop(player.id, S_FLIPY);
+            if(player.y + background.y <= 246){
+                player.y += 3;
+            }
+            if(background.y < 103){
+                background.y += 3;
+                move_bkg(background.x, background.y);
+            }
+            break;
+
+        case J_LEFT:
+            set_sprite_tile(player.id, 33);
+            set_sprite_prop(player.id, S_FLIPX);
+            if(player.x + background.x >= 8){
+                if(player.x >= 8){
+                    player.x -= 3;
+                }
+            }
+            if(background.x > 3){
+                background.x -= 3;
+                move_bkg(background.x, background.y);
+            }
+            break;
+
+        case J_RIGHT:
+            set_sprite_tile(player.id, 33);
+            set_sprite_prop(player.id, 0);
+            if(player.x + background.x <= 240){
+                player.x += 3;
+            }
+            if(background.x < 88){
+                background.x += 3;
+                move_bkg(background.x, background.y);
+            }
+            break;
+
     }
-    return 0;
+}
+
+void mover_mochila_lado(){
+    switch (joypad()){
+        case J_LEFT:
+            if(player.x >= 9){
+                player.x -= 3;
+            }
+            break;
+
+        case J_RIGHT:
+            if(player.x <= 150){
+                player.x += 3;
+            }
+            break;
+
+    }
+}
+
+void mover_sprites(UINT8 id, UINT8 x, UINT8 y){
+    move_sprite(id, x, y); // esquerda superior
+    move_sprite(id+1, x, y+8); // esquerda inferior
+    move_sprite(id+2, x+8, y); // direita superior
+    move_sprite(id+3, x+8, y+8); // direita inferior
 }
 
 #endif
