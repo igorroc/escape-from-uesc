@@ -43,6 +43,8 @@ UINT8 verifica_biblioteca();
 UINT8 verifica_jorge();
 UINT8 verifica_exatas();
 UINT8 verifica_adonias();
+UINT8 verifica_arvore_cima();
+UINT8 verifica_arvore_baixo();
 UINT8 verifica_ru();
 void verifica_borda();
 void verifica_vidas();
@@ -630,7 +632,21 @@ UINT8 verifica_exatas(){
 }
 
 UINT8 verifica_adonias(){
-    if((background.x+player.x) >= 180 && (background.x+player.x) <= 194 && (background.y+player.y) >= 130 && (background.y+player.y) <= 146){
+    if((background.x+player.x) >= 180 && (background.x+player.x) <= 194 && (background.y+player.y) >= 134 && (background.y+player.y) <= 158){
+        return 1;
+    }
+    return 0;
+}
+
+UINT8 verifica_arvore_cima(){
+    if((background.x+player.x) >= 78 && (background.x+player.x) <= 86 && (background.y+player.y) >= 62 && (background.y+player.y) <= 78){
+        return 1;
+    }
+    return 0;
+}
+
+UINT8 verifica_arvore_baixo(){
+    if((background.x+player.x) >= 78 && (background.x+player.x) <= 86 && (background.y+player.y) >= 126 && (background.y+player.y) <= 142){
         return 1;
     }
     return 0;
@@ -655,6 +671,9 @@ void verifica_borda(){
 }
 
 void verifica_vidas(){
+    set_sprite_tile(7, 83);
+    set_sprite_tile(8, 83);
+    set_sprite_tile(9, 83);
     switch (player.vidas){
         case 3:
             move_sprite(7, 142, 20);

@@ -20,7 +20,7 @@ typedef struct Player{
     UINT8 chao; //Indica quando ele esta no chao
     UINT8 UESC[4]; //Pontos para poder terminar
     UINT8 reais;
-    UINT32 contador_RU;
+    UINT16 contador_RU;
 }_Player;
 
     _Player player;

@@ -14,6 +14,8 @@
 #include "assets/fases/jorge/plantas_chave.c"
 #include "assets/fases/biblioteca/Background_biblioteca.c"
 #include "assets/fases/biblioteca/Itens.c"
+#include "assets/fases/ceu/Mapa_CEU.c"
+#include "assets/fases/ceu/Tile_Nave.c"
 #include "assets/testes/umreal.c"
 #include "assets/testes/Letras.c"
 
@@ -77,40 +79,37 @@ void main(){
     set_sprite_data(83, 1, vida); // SPRITE CORAÇÃO
     set_sprite_data(84, 4, plantas_chave); // PLANTAS INIMIGAS E CHAVE
     set_sprite_data(88, 7, umreal); // SPRITES DE 1 REAL COM ANIMAÇÃO
+    set_sprite_data(95, 4, Tile_Nave); //NAVE
     
     // SETANDO TILES
     set_sprite_tile(player.id, 32); // SETA
-    set_sprite_tile(7, 83); // CORACAO 1
-    set_sprite_tile(8, 83); // CORACAO 2
-    set_sprite_tile(9, 83); // CORACAO 3
 
-    
     // SETANDO BACKGROUND
     background.x = 40;
     background.y = 100;
 
-    set_bkg_data(0, 10, tilesbackgroundCima); // TILES DO BACKGROUND
+    set_bkg_data(0, 13, tilesbackgroundCima); // TILES DO BACKGROUND
     set_bkg_tiles(0, 0, 31, 31, mapamenu); // INICIANDO O MAPA DA UESC
     move_bkg(background.x, background.y);
 /*  []-------- FIM DO SETUP --------[] */
 
     DISPLAY_ON;
     SHOW_SPRITES;
-    
+    //escrever("O jogo consiste em voce fugir da uesc pegando todas as letras :UESC:", 50, 0, 50);
+    remover_sprites(0, 39);
     intro(); // ANIMAÇÃO DA LOGO DO JOGO
     waitpad(J_START);
     som_confirmar();
-   
+    
     fadeout(delay_rapido);
-    move_sprite(7, 142, 20); // CORACAO 1
-    move_sprite(8, 150, 20); // CORACAO 2
-    move_sprite(9, 158, 20); // CORACAO 3
-    intro_saida();
+    remover_sprites(20, 33); // REMOVER INTRO
     SHOW_BKG;
+    verifica_vidas();
+    verifica_moedas();
+    move_sprite(player.id, player.x, player.y);
     fadein(delay_rapido);
 
-    //escrever("testando funcao", 50);
-    //waitpad(J_A);
+    
 
     while(player.vidas > 0){
 
@@ -122,40 +121,43 @@ void main(){
 
         if(joypad() == J_A && verifica_ru()){
             
-            fadeout(100);
+            fadeout(delay_rapido);
             move_sprite(player.id, 250, 250); // JOGANDO PARA FORA DA TELA
             HIDE_BKG;
             ru(); // TEXTO
 
-            fadein(100);
+            fadein(delay_rapido);
             
-            delay(300);
+            delay(delay_lento);
 
-            fadeout(100);
+            fadeout(delay_rapido);
             
-            ru_saida(); // TEXTO SAIDA
+            remover_sprites(20, 21); // TEXTO SAIDA
             
             if(player.contador_RU > 500){ // COOLDOWN PARA PODER COMPRAR VIDA PASSOU
                 confirmar_ru(); // TEXTO 
             }else{
                 ru_fechado();
             }
-            fadein(100);
+            fadein(delay_rapido);
 
             while (joypad() != J_A && joypad() != J_B && joypad() != J_START){
                 if(player.contador_RU > 500){ // COOLDOWN PARA PODER COMPRAR VIDA PASSOU
+                    confirmar_ru();
                     while(1){
                         animacao_moeda();
-                        delay(50);
+                        delay(FPS);
                         if(joypad() == J_A){ // COMPRAR VIDA
                             if(player.reais >= 1){
                                 player.vidas++;
                                 player.reais--;
                                 player.contador_RU = 0;
                             }else{
-                                ru_fechado_saida();
+                                remover_sprites(20, 26);
+                                moeda.x = 250;
+                                moeda.y = 250;
                                 sem_moedas();
-                                delay(100);
+                                delay(delay_rapido);
                                 waitpad(J_A);
                             }
                             break;
@@ -166,14 +168,14 @@ void main(){
                     
                 }else{ // AINDA EM COOLDOWN PARA COMPRAR A VIDA
                     ru_timer();
+                    remover_sprites(20, 35);
                 }
             }
             
             
             
-            fadeout(100);
-            sem_moedas_saida(); // TEXTO SAIDA
-            ru_fechado_saida(); // TEXTO SAIDA
+            fadeout(delay_rapido);
+            remover_sprites(20, 35); // TEXTO SAIDA
             verifica_vidas();
             verifica_moedas();
             SHOW_BKG;
@@ -187,7 +189,7 @@ void main(){
             background.y = 100;
             move_bkg(background.x, background.y);
 
-            fadein(100);
+            fadein(delay_rapido);
         }
         if(joypad() == J_A && verifica_biblioteca()){
             
@@ -217,7 +219,7 @@ void main(){
 
             fadeout(delay_rapido);
             
-            biblioteca_saida(); // SAI O TEXTO
+            remover_sprites(20, 29); // SAIDA DO TEXTO
             
             // ARRUMA E INICIA A SPRITE DA MOCHILA
             set_sprite_prop(player.id, 0);
@@ -311,7 +313,7 @@ void main(){
 
             fadeout(100);
             som_sair();
-            pontos_saida();
+            remover_sprites(20, 27); // REMOVER TEXTO PONTOS
             set_sprite_tile(player.id, 32); // SETA
             move_sprite(player.id+1, 250, 250); // JOGANDO PARA FORA DA TELA
             move_sprite(player.id+2, 250, 250); // JOGANDO PARA FORA DA TELA
@@ -334,13 +336,13 @@ void main(){
         if(joypad() == J_A && verifica_jorge()){
             fadeout(100);
 
-            jorge();
+            jorge();//PRINTA O NOME NA TELA
             mover_sprites(player.id, 250, 250);
             HIDE_BKG;
             fadein(100);
             delay(300);
             fadeout(100);
-            jorge_saida();
+            remover_sprites(17, 29);
             set_bkg_tiles(0, 0, 20, 18, mapa_jorge);
             move_bkg(0, 0);
 
@@ -368,7 +370,7 @@ void main(){
             moeda.cont_letra = 0;
             
             SHOW_BKG;
-            
+            verifica_uesc();
             fadein(100);
 
             while (joypad() != J_START && player.vidas > 0){
@@ -507,20 +509,101 @@ void main(){
             
         }
         if(joypad() == J_A && verifica_adonias()){
+            fadeout(100);
+
+            //ceu();//PRINTA O NOME NA TELA
+            mover_sprites(player.id, 250, 250);
             HIDE_BKG;
-            while (joypad() != J_START){
-                
-            }
+            delay(300);
+            remover_sprites(17, 29);
+            set_bkg_tiles(0, 0, 32, 18, Mapa_CEU);
+            move_bkg(0, 0);
+            
+            set_sprite_prop(player.id, 0);
+            set_sprite_prop(player.id+1, 0);
+            set_sprite_prop(player.id+2, 0);
+            set_sprite_prop(player.id+3, 0);
+            set_sprite_tile(player.id, 95);
+            set_sprite_tile(player.id+1, 96);
+            set_sprite_tile(player.id+2, 97);
+            set_sprite_tile(player.id+3, 98);
+            
+            player.x = 30;
+            player.y = 80;
+
+            mover_sprites(player.id, player.x, player.y);
+
             SHOW_BKG;
+            fadein(100);
+            
+            while (joypad() != J_START){
+                mover_sprites(player.id, player.x, player.y);
+                scroll_bkg(1,0);
+                if(joypad() == J_UP){
+                    if(player.y > 35){
+                        player.y -= 3;
+                    }
+                    
+                }else if(joypad() == J_DOWN){
+                    if(player.y < 141){
+                        player.y += 3;
+                    }
+                    
+                }
+                delay(FPS);
+            }
+            
+            fadeout(100);
+
+            remover_sprites(0 , 3);
+            player.x = 80;
+            player.y = 109;
+            set_sprite_tile(player.id, 32); // SETA
+            move_sprite(player.id, player.x, player.y); // SETA
+
+            background.x = 40;
+            background.y = 100;
+            set_bkg_tiles(0, 0, 31, 31, mapamenu);
+            move_bkg(background.x, background.y);
+            
+            fadein(100);
             
         }
         if(joypad() == J_A && verifica_guarita()){
+            fadeout(100);
             HIDE_BKG;
+            move_sprite(player.id, 250, 250);
+            if(player.UESC[0] == TRUE && player.UESC[1] == TRUE && player.UESC[2] == TRUE && player.UESC[3] == TRUE){ // COOLDOWN PARA PODER COMPRAR VIDA PASSOU
+                confirmar_saida(); // TEXTO 
+            }else{
+                
+            }
+            fadein(100);
             while (joypad() != J_START){
                 
             }
+            fadeout(100);
             SHOW_BKG;
-            
+            player.x = 80;
+            player.y = 109;
+            move_sprite(player.id, player.x, player.y); // SETA
+            background.x = 40;
+            background.y = 100;
+            move_bkg(background.x, background.y);
+            remover_sprites(20, 26);
+            fadein(100);
+        }
+        if(joypad() == J_A && verifica_arvore_cima()){
+            player.UESC[0] = TRUE;
+            player.UESC[1] = TRUE;
+            player.UESC[2] = TRUE;
+            player.UESC[3] = TRUE;
+        }
+        if(joypad() == J_A && verifica_arvore_baixo()){
+            player.UESC[0] = FALSE;
+            player.UESC[1] = FALSE;
+            player.UESC[2] = FALSE;
+            player.UESC[3] = FALSE;
         }
         
         player.contador_RU++;
@@ -530,27 +613,13 @@ void main(){
     
     fadeout(200);
     
-    move_sprite(player.id, 250, 250);
-    move_sprite(4, 250, 250);
-    move_sprite(5, 250, 250);
-    move_sprite(66, 250, 250);
-    move_sprite(67, 250, 250);
-    move_sprite(68, 250, 250);
-    move_sprite(69, 250, 250);
-
-    verifica_uesc_saida();
+    remover_sprites(0, 40);
 
     HIDE_BKG;
 
     fadein(200);
 
     game_over();
-    
-    
-    
-    
-
-
 
     display_off();
 }

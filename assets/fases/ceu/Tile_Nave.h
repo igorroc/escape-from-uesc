@@ -9,8 +9,8 @@
   Format               : Gameboy 4 color.
   Compression          : None.
   Counter              : None.
-  Tile size            : 8 x 8
-  Tiles                : 0 to 12
+  Tile size            : 16 x 16
+  Tiles                : 0 to 11
 
   Palette colors       : None.
   SGB Palette          : None.
@@ -24,8 +24,8 @@
 
 
 /* Bank of tiles. */
-#define tilesbackgroundCimaBank 0
+#define Tile_NaveBank 0
 /* Start of tile array. */
-extern unsigned char tilesbackgroundCima[];
+extern unsigned char Tile_Nave[];
 
 /* End of ESCAPE_FROM_UESC_1.H */
