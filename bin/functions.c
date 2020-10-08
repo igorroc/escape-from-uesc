@@ -2,10 +2,9 @@
 #define FUNCTIONS_C
 
 #include <gb/gb.h>
+#include "textos.c"
 
 #include "struct_player.c"
-
-
 
 
 // --------------- FUNCOES DE TELA ---------------
@@ -37,6 +36,7 @@ void mover_sprites(UINT8 id, UINT8 x, UINT8 y);
 void setup_plantas();
 void remover_plantas();
 void animacao_moeda();
+void reset_sprites(UINT8 id, UINT8 qtd);
 
 // ------------ FUNCOES DE VERIFICACAO ------------
 
@@ -299,7 +299,12 @@ void mover_personagem_lado(){
             break;
 
         case J_LEFT:
-            player.x -= 3;
+            if(nivel == 1){
+                player.x -= 6;
+            }else{
+                player.x -= 3;
+            }
+            
             if(player.direcao == 1){
                 set_sprite_prop(player.id, S_FLIPX);
                 set_sprite_prop(player.id+1, S_FLIPX);
@@ -358,22 +363,6 @@ void mover_personagem_lado(){
                 som_pulo();
             }
             break;
-
-        case J_B:
-            if(player.direcao == 1){
-                set_sprite_tile(player.id, 24);
-                set_sprite_tile(player.id+1, 25);
-                set_sprite_tile(player.id+2, 26);
-                set_sprite_tile(player.id+3, 27);
-            }else{
-                set_sprite_tile(player.id, 26);
-                set_sprite_tile(player.id+1, 27);
-                set_sprite_tile(player.id+2, 24);
-                set_sprite_tile(player.id+3, 25);
-            }
-
-            break;
-
         default:
             rolagem = 0;
             player.piscando++;
@@ -417,6 +406,9 @@ void mover_personagem_lado(){
                         set_sprite_tile(player.id+3, 1);
                     }
                 }
+            }
+            if(nivel == 1){
+                player.x -= 3;
             }
     }
 }
@@ -607,15 +599,6 @@ void setup_plantas(){
     set_sprite_tile(planta[5].id, 84);
 }
 
-void remover_plantas(){
-    int i;
-    for(i = 0; i < 6; i++){
-        planta[i].x = 250;
-        planta[i].y = 250;
-        move_sprite(planta[i].id, planta[i].x, planta[i].y);
-    }
-}
-
 void animacao_moeda(){
     if(moeda.brilho == 2){
         if(moeda.giro > 11){
@@ -662,6 +645,13 @@ void animacao_moeda(){
     move_sprite(moeda.id, moeda.x, moeda.y);
 }
 
+void reset_sprites(UINT8 id, UINT8 qtd){
+    int i;
+    for(i = 0; i < qtd; i++){
+        set_sprite_prop(id+i, 0);
+    }
+}
+
 // ------------ FUNCOES DE VERIFICACAO ------------
 
 UINT8 verifica_guarita(){
@@ -706,8 +696,8 @@ UINT8 verifica_arvore_cima(){
     return 0;
 }
 
-UINT8 verifica_arvore_baixo(){
-    if((background.x+player.x) >= 78 && (background.x+player.x) <= 86 && (background.y+player.y) >= 126 && (background.y+player.y) <= 142){
+UINT8 verifica_torre(){
+    if((background.x+player.x) >= 94 && (background.x+player.x) <= 150 && (background.y+player.y) >= 162 && (background.y+player.y) <= 218){
         return 1;
     }
     return 0;
@@ -766,6 +756,9 @@ UINT8 sorteio(UINT8 min, UINT8 max){
     
     return valor;
 }
+
+// ------------ FUNCOES DAS FASES ------------
+
 
 
 #endif

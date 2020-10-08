@@ -42,22 +42,15 @@
 #define nove 82
 
 void intro();
-void biblioteca();
-void jorge();
-void ru();
+void confirmar_ru();
 void pontos();
 void verifica_uesc();
+void verifica_moedas();
 void game_over();
-void ru_fechado();
-void confirmar_ru();
-void sem_moedas();
 void ru_timer();
-void vida_cheia();
 void remover_sprites(UINT8, UINT8);
 
-void escrever(char*, UINT8, UINT8, UINT8);
-void limpar();
-
+void escrever(char*, UINT8, UINT8, UINT8); // SÓ FUNCIONA 11 LETRAS
 
 
 void intro(){
@@ -166,98 +159,26 @@ void intro(){
 
 }
 
-void biblioteca(){
-    set_sprite_prop(20, 0);
-    set_sprite_prop(21, 0);
-    set_sprite_prop(22, 0);
-    set_sprite_prop(23, 0);
-    set_sprite_prop(24, 0);
-    set_sprite_prop(25, 0);
-    set_sprite_prop(26, 0);
-    set_sprite_prop(27, 0);
-    set_sprite_prop(28, 0);
-    set_sprite_prop(29, 0);
+void confirmar_ru(){
+    set_sprite_tile(20, 83);
+    set_sprite_tile(21, ponto);
+    set_sprite_tile(22, ponto);
+    set_sprite_tile(23, ponto);
 
-    set_sprite_tile(20, B);
-    set_sprite_tile(21, I);
-    set_sprite_tile(22, B);
-    set_sprite_tile(23, L);
-    set_sprite_tile(24, I);
-    set_sprite_tile(25, O);
-    set_sprite_tile(26, T);
-    set_sprite_tile(27, E);
-    set_sprite_tile(28, C);
-    set_sprite_tile(29, A);
     
-    move_sprite(20, 44, 85);
-    move_sprite(21, 44+8, 85);
-    move_sprite(22, 44+16, 85);
-    move_sprite(23, 44+24, 85);
-    move_sprite(24, 44+32, 85);
-    move_sprite(25, 44+40, 85);
-    move_sprite(26, 44+48, 85);
-    move_sprite(27, 44+56, 85);
-    move_sprite(28, 44+64, 85);
-    move_sprite(29, 44+72, 85);
-}
 
-void jorge(){
-    set_sprite_prop(17, 0);
-    set_sprite_prop(18, 0);
-    set_sprite_prop(19, 0);
-    set_sprite_prop(20, 0);
-    set_sprite_prop(21, 0);
-    set_sprite_prop(22, 0);
-    set_sprite_prop(23, 0);
-    set_sprite_prop(24, 0);
-    set_sprite_prop(25, 0);
-    set_sprite_prop(26, 0);
-    set_sprite_prop(27, 0);
-    set_sprite_prop(28, 0);
-    set_sprite_prop(29, 0);
+    move_sprite(20, 68, 76);
+    delay(FPS);
+    move_sprite(21, 68+14, 76);
+    delay(FPS);
+    move_sprite(22, 68+16, 76);
+    delay(FPS);
+    move_sprite(23, 68+18, 76);
+    delay(FPS);
+    moeda.x = 68+32;
+    moeda.y = 76;
+    moeda.id = 24;
 
-    set_sprite_tile(17, P);
-    set_sprite_tile(18, A);
-    set_sprite_tile(19, V);
-
-    set_sprite_tile(20, J);
-    set_sprite_tile(21, O);
-    set_sprite_tile(22, R);
-    set_sprite_tile(23, G);
-    set_sprite_tile(24, E);
-
-    set_sprite_tile(25, A);
-    set_sprite_tile(26, M);
-    set_sprite_tile(27, A);
-    set_sprite_tile(28, D);
-    set_sprite_tile(29, O);
-    
-    move_sprite(17, 76, 77);
-    move_sprite(18, 76+8, 77);
-    move_sprite(19, 76+16, 77);
-
-    move_sprite(20, 68, 85);
-    move_sprite(21, 68+8, 85);
-    move_sprite(22, 68+16, 85);
-    move_sprite(23, 68+24, 85);
-    move_sprite(24, 68+32, 85);
-
-    move_sprite(25, 68, 93);
-    move_sprite(26, 68+8, 93);
-    move_sprite(27, 68+16, 93);
-    move_sprite(28, 68+24, 93);
-    move_sprite(29, 68+32, 93);
-}
-
-void ru(){
-    set_sprite_prop(20, 0);
-    set_sprite_prop(21, 0);
-
-    set_sprite_tile(20, R);
-    set_sprite_tile(21, U);
-    
-    move_sprite(20, 80, 85);
-    move_sprite(21, 80+8, 85);
 }
 
 void pontos(){
@@ -267,6 +188,7 @@ void pontos(){
     }else{
         tile = zero;
     }
+    
     set_sprite_prop(20, 0);
     set_sprite_prop(21, 0);
     set_sprite_prop(22, 0);
@@ -401,136 +323,12 @@ void game_over(){
     delay(100);
 
     while(1){
-        if(joypad() == J_A || joypad() == J_B || joypad() == J_DOWN || joypad() == J_UP || joypad() == J_LEFT || joypad() == J_RIGHT || joypad() == J_SELECT){
-            return;
-        }else if(joypad() == J_START){
+        if(joypad() == J_A || joypad() == J_B || joypad() == J_DOWN || joypad() == J_UP || joypad() == J_LEFT || joypad() == J_RIGHT || joypad() == J_SELECT || joypad() == J_START){
             remover_sprites(20, 27);
             reset();
         }
     }
 
-}
-
-void ru_fechado(){
-    set_sprite_prop(20, 0);
-    set_sprite_prop(21, 0);
-    set_sprite_prop(22, 0);
-    set_sprite_prop(23, 0);
-    set_sprite_prop(24, 0);
-    set_sprite_prop(25, 0);
-    set_sprite_prop(26, 0);
-    set_sprite_prop(27, 0);
-    set_sprite_prop(28, 0);
-    set_sprite_prop(29, 0);
-    set_sprite_prop(30, 0);
-    set_sprite_prop(31, 0);
-    set_sprite_prop(32, 0);
-
-    set_sprite_tile(20, A);
-    set_sprite_tile(21, G);
-    set_sprite_tile(22, U);
-    set_sprite_tile(23, A);
-    set_sprite_tile(24, R);
-    set_sprite_tile(25, D);
-    set_sprite_tile(26, E);
-
-    set_sprite_tile(27, N);
-    set_sprite_tile(28, A);
-
-    set_sprite_tile(29, F);
-    set_sprite_tile(30, I);
-    set_sprite_tile(31, L);
-    set_sprite_tile(32, A);
-
-    move_sprite(20, 60, 77);
-    move_sprite(21, 60+8, 77);
-    move_sprite(22, 60+16, 77);
-    move_sprite(23, 60+24, 77);
-    move_sprite(24, 60+32, 77);
-    move_sprite(25, 60+40, 77);
-    move_sprite(26, 60+48, 77);
-    move_sprite(27, 60, 85);
-    move_sprite(28, 60+8, 85);
-    move_sprite(29, 60+24, 85);
-    move_sprite(30, 60+32, 85);
-    move_sprite(31, 60+40, 85);
-    move_sprite(32, 60+48, 85);
-
-}
-
-void confirmar_ru(){
-    set_sprite_tile(20, 83);
-    set_sprite_tile(21, ponto);
-    set_sprite_tile(22, ponto);
-    set_sprite_tile(23, ponto);
-
-    
-
-    move_sprite(20, 68, 76);
-    move_sprite(21, 68+14, 76);
-    move_sprite(22, 68+16, 76);
-    move_sprite(23, 68+18, 76);
-    moeda.x = 68+32;
-    moeda.y = 76;
-    moeda.id = 24;
-
-}
-
-void confirmar_saida(){
-    set_sprite_prop(20, 0);
-    set_sprite_prop(21, 0);
-    set_sprite_prop(22, 0);
-    set_sprite_prop(23, 0);
-    set_sprite_prop(24, 0);
-    set_sprite_prop(25, 0);
-
-    set_sprite_tile(20, S);
-    set_sprite_tile(21, A);
-    set_sprite_tile(22, I);
-    set_sprite_tile(23, N);
-    set_sprite_tile(24, D);
-    set_sprite_tile(25, O);
-
-    move_sprite(20, 64, 85);
-    move_sprite(21, 64+8, 85);
-    move_sprite(22, 64+16, 85);
-    move_sprite(23, 64+24, 85);
-    move_sprite(24, 64+32, 85);
-    move_sprite(25, 64+40, 85);
-}
-
-void sem_moedas(){
-    set_sprite_prop(20, 0);
-    set_sprite_prop(21, 0);
-    set_sprite_prop(22, 0);
-    set_sprite_prop(23, 0);
-    set_sprite_prop(24, 0);
-    set_sprite_prop(25, 0);
-    set_sprite_prop(26, 0);
-    set_sprite_prop(27, 0);
-    set_sprite_prop(28, 0);
-
-    set_sprite_tile(20, S);
-    set_sprite_tile(21, E);
-    set_sprite_tile(22, M);
-
-    set_sprite_tile(23, M);
-    set_sprite_tile(24, O);
-    set_sprite_tile(25, E);
-    set_sprite_tile(26, D);
-    set_sprite_tile(27, A);
-    set_sprite_tile(28, S);
-
-    move_sprite(20, 76, 81);
-    move_sprite(21, 76+8, 81);
-    move_sprite(22, 76+16, 81);
-
-    move_sprite(23, 64, 89);
-    move_sprite(24, 64+8, 89);
-    move_sprite(25, 64+16, 89);
-    move_sprite(26, 64+24, 89);
-    move_sprite(27, 64+32, 89);
-    move_sprite(28, 64+40, 89);
 }
 
 void ru_timer(){
@@ -586,39 +384,6 @@ void ru_timer(){
     
 }
 
-void vida_cheia(){
-    set_sprite_prop(20, 0);
-    set_sprite_prop(21, 0);
-    set_sprite_prop(22, 0);
-    set_sprite_prop(23, 0);
-    set_sprite_prop(24, 0);
-    set_sprite_prop(25, 0);
-    set_sprite_prop(26, 0);
-    set_sprite_prop(27, 0);
-    set_sprite_prop(28, 0);
-
-    set_sprite_tile(20, V);
-    set_sprite_tile(21, I);
-    set_sprite_tile(22, D);
-    set_sprite_tile(23, A);
-
-    set_sprite_tile(24, C);
-    set_sprite_tile(25, H);
-    set_sprite_tile(26, E);
-    set_sprite_tile(27, I);
-    set_sprite_tile(28, A);
-
-    move_sprite(20, 72, 76);
-    move_sprite(21, 72+8, 76);
-    move_sprite(22, 72+16, 76);
-    move_sprite(23, 72+24, 76);
-    move_sprite(24, 68, 84);
-    move_sprite(25, 68+8, 84);
-    move_sprite(26, 68+16, 84);
-    move_sprite(27, 68+24, 84);
-    move_sprite(28, 68+32, 84);
-}
-
 void remover_sprites(UINT8 inicio, UINT8 fim){
     int i;
     for(i = inicio; i <= fim; i++){
@@ -627,14 +392,10 @@ void remover_sprites(UINT8 inicio, UINT8 fim){
 }
 
 
-void escrever(char* frase, UINT8 altura, UINT8 tile, UINT8 topo){
+void escrever(char* frase, UINT8 tile, UINT8 x, UINT8 y){
     UINT16 i = 0;
     UINT16 len = strlen(frase);
     
-    if(tile >= 40){
-        waitpad(J_A);
-        escrever(frase, topo, 0, topo);
-    }
     while(i <= 10){
         
         if(frase[i] == '\0'){
@@ -656,19 +417,13 @@ void escrever(char* frase, UINT8 altura, UINT8 tile, UINT8 topo){
                 set_sprite_tile(tile, ponto);
             }
             set_sprite_prop(tile, 0);
-            move_sprite(tile, 20+8*i, altura);
+            move_sprite(tile, x+8*i, y);
             tile++;
         }
         
 
         i++;
         delay(FPS);
-    }
-
-    if(frase[i] != '\0'){
-        escrever(frase+i, altura+8, tile, topo);
-    }else{
-        remover_sprites(tile, 39);
     }
 }
 

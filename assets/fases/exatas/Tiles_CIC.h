@@ -10,7 +10,7 @@
   Compression          : None.
   Counter              : None.
   Tile size            : 8 x 8
-  Tiles                : 0 to 12
+  Tiles                : 0 to 8
 
   Palette colors       : None.
   SGB Palette          : None.
@@ -24,8 +24,8 @@
 
 
 /* Bank of tiles. */
-#define tilesbackgroundCimaBank 0
+#define tiles_CICBank 0
 /* Start of tile array. */
-extern unsigned char tilesbackgroundCima[];
+extern unsigned char tiles_CIC[];
 
 /* End of ESCAPE_FROM_UESC_1.H */
