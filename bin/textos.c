@@ -52,6 +52,7 @@ void ru_fechado();
 void confirmar_ru();
 void sem_moedas();
 void ru_timer();
+void vida_cheia();
 void remover_sprites(UINT8, UINT8);
 
 void escrever(char*, UINT8, UINT8, UINT8);
@@ -284,14 +285,14 @@ void pontos(){
     set_sprite_tile(26, ponto);
     set_sprite_tile(27, tile);
 
-    move_sprite(20, 10, 150);
-    move_sprite(21, 10+8, 150);
-    move_sprite(22, 10+16, 150);
-    move_sprite(23, 10+24, 150);
-    move_sprite(24, 10+32, 150);
-    move_sprite(25, 10+40, 150);
-    move_sprite(26, 10+48, 150);
-    move_sprite(27, 10+56, 150);
+    move_sprite(20, 10, 153);
+    move_sprite(21, 10+8, 153);
+    move_sprite(22, 10+16, 153);
+    move_sprite(23, 10+24, 153);
+    move_sprite(24, 10+32, 153);
+    move_sprite(25, 10+40, 153);
+    move_sprite(26, 10+48, 153);
+    move_sprite(27, 10+56, 153);
 }
 
 void verifica_uesc(){
@@ -418,22 +419,42 @@ void ru_fechado(){
     set_sprite_prop(24, 0);
     set_sprite_prop(25, 0);
     set_sprite_prop(26, 0);
+    set_sprite_prop(27, 0);
+    set_sprite_prop(28, 0);
+    set_sprite_prop(29, 0);
+    set_sprite_prop(30, 0);
+    set_sprite_prop(31, 0);
+    set_sprite_prop(32, 0);
 
-    set_sprite_tile(20, F);
-    set_sprite_tile(21, E);
-    set_sprite_tile(22, C);
-    set_sprite_tile(23, H);
-    set_sprite_tile(24, A);
+    set_sprite_tile(20, A);
+    set_sprite_tile(21, G);
+    set_sprite_tile(22, U);
+    set_sprite_tile(23, A);
+    set_sprite_tile(24, R);
     set_sprite_tile(25, D);
-    set_sprite_tile(26, O);
+    set_sprite_tile(26, E);
 
-    move_sprite(20, 60, 85);
-    move_sprite(21, 60+8, 85);
-    move_sprite(22, 60+16, 85);
-    move_sprite(23, 60+24, 85);
-    move_sprite(24, 60+32, 85);
-    move_sprite(25, 60+40, 85);
-    move_sprite(26, 60+48, 85);
+    set_sprite_tile(27, N);
+    set_sprite_tile(28, A);
+
+    set_sprite_tile(29, F);
+    set_sprite_tile(30, I);
+    set_sprite_tile(31, L);
+    set_sprite_tile(32, A);
+
+    move_sprite(20, 60, 77);
+    move_sprite(21, 60+8, 77);
+    move_sprite(22, 60+16, 77);
+    move_sprite(23, 60+24, 77);
+    move_sprite(24, 60+32, 77);
+    move_sprite(25, 60+40, 77);
+    move_sprite(26, 60+48, 77);
+    move_sprite(27, 60, 85);
+    move_sprite(28, 60+8, 85);
+    move_sprite(29, 60+24, 85);
+    move_sprite(30, 60+32, 85);
+    move_sprite(31, 60+40, 85);
+    move_sprite(32, 60+48, 85);
 
 }
 
@@ -514,35 +535,43 @@ void sem_moedas(){
 
 void ru_timer(){
 
+    set_sprite_prop(11, 0);
+    set_sprite_prop(12, 0);
+    set_sprite_prop(13, 0);
+    set_sprite_prop(14, 0);
+    set_sprite_prop(15, 0);
+    set_sprite_prop(16, 0);
+    set_sprite_prop(17, 0);
+
     while (joypad() != J_A && joypad() != J_B && joypad() != J_START && player.contador_RU <= 500){
         
         if(player.contador_RU > 426){
-            set_sprite_tile(33, 33); // SETA
-            set_sprite_tile(32, ponto);
-            move_sprite(33, 52+48, 93);
+            set_sprite_tile(17, 33); // SETA
+            set_sprite_tile(16, ponto);
+            move_sprite(17, 52+48, 93);
         }else if(player.contador_RU > 355){
-            set_sprite_tile(32, 33); // SETA
-            set_sprite_tile(31, ponto);
-            move_sprite(32, 52+40, 93);
+            set_sprite_tile(16, 33); // SETA
+            set_sprite_tile(15, ponto);
+            move_sprite(16, 52+40, 93);
         }else if(player.contador_RU > 284){
-            set_sprite_tile(31, 33); // SETA
-            set_sprite_tile(30, ponto);
-            move_sprite(31, 52+32, 93);
+            set_sprite_tile(15, 33); // SETA
+            set_sprite_tile(14, ponto);
+            move_sprite(15, 52+32, 93);
         }else if(player.contador_RU > 213){
-            set_sprite_tile(30, 33); // SETA
-            set_sprite_tile(29, ponto);
-            move_sprite(30, 52+24, 93);
+            set_sprite_tile(14, 33); // SETA
+            set_sprite_tile(13, ponto);
+            move_sprite(14, 52+24, 93);
         }else if(player.contador_RU > 142){
-            set_sprite_tile(29, 33); // SETA
-            set_sprite_tile(28, ponto);
-            move_sprite(29, 52+16, 93);
+            set_sprite_tile(13, 33); // SETA
+            set_sprite_tile(12, ponto);
+            move_sprite(13, 52+16, 93);
         }else if(player.contador_RU > 71){
-            set_sprite_tile(28, 33);
-            set_sprite_tile(27, ponto);
-            move_sprite(28, 52+8, 93); 
+            set_sprite_tile(12, 33);
+            set_sprite_tile(11, ponto);
+            move_sprite(12, 52+8, 93); 
         }else if(player.contador_RU >= 0){
-            set_sprite_tile(27, 33); // SETA
-            move_sprite(27, 52, 93);
+            set_sprite_tile(11, 33); // SETA
+            move_sprite(11, 52, 93);
         }
         
 
@@ -555,6 +584,39 @@ void ru_timer(){
         delay(FPS);
     }
     
+}
+
+void vida_cheia(){
+    set_sprite_prop(20, 0);
+    set_sprite_prop(21, 0);
+    set_sprite_prop(22, 0);
+    set_sprite_prop(23, 0);
+    set_sprite_prop(24, 0);
+    set_sprite_prop(25, 0);
+    set_sprite_prop(26, 0);
+    set_sprite_prop(27, 0);
+    set_sprite_prop(28, 0);
+
+    set_sprite_tile(20, V);
+    set_sprite_tile(21, I);
+    set_sprite_tile(22, D);
+    set_sprite_tile(23, A);
+
+    set_sprite_tile(24, C);
+    set_sprite_tile(25, H);
+    set_sprite_tile(26, E);
+    set_sprite_tile(27, I);
+    set_sprite_tile(28, A);
+
+    move_sprite(20, 72, 76);
+    move_sprite(21, 72+8, 76);
+    move_sprite(22, 72+16, 76);
+    move_sprite(23, 72+24, 76);
+    move_sprite(24, 68, 84);
+    move_sprite(25, 68+8, 84);
+    move_sprite(26, 68+16, 84);
+    move_sprite(27, 68+24, 84);
+    move_sprite(28, 68+32, 84);
 }
 
 void remover_sprites(UINT8 inicio, UINT8 fim){
@@ -609,5 +671,6 @@ void escrever(char* frase, UINT8 altura, UINT8 tile, UINT8 topo){
         remover_sprites(tile, 39);
     }
 }
+
 
 #endif

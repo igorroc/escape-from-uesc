@@ -28,8 +28,10 @@ UINT8 colisao_plataforma(UINT8, UINT8, UINT8);
 int colisao_16bits(UINT8, UINT8, UINT8, UINT8);//RETORNA 1 SE COLIDIU, 0 SE NAO
 int colisao_8bits(UINT8, UINT8, UINT8, UINT8);
 void pular();
-void mover_personagem_cima();
+void mover_personagem_topo();
 void mover_personagem_lado();
+void mover_personagem_cima_baixo();
+void mover_inimigo_cima_baixo();
 void mover_mochila_lado();
 void mover_sprites(UINT8 id, UINT8 x, UINT8 y);
 void setup_plantas();
@@ -215,6 +217,15 @@ int colisao_16bits(UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2){
 int colisao_8bits(UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2){ //X1 E Y1 É DA PLANTA, X2 E Y2 É DO PLAYER
     if(x1 > x2 - 8 && x1 < x2 + 16){
         if(y1 > y2 - 8 && y1 < y2 + 16){
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int colisao_12bits(UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2){
+    if(x1 > x2 - 12 && x1 < x2 + 12){
+        if(y1 > y2 - 12 && y1 < y2 + 12){
             return 1;
         }
     }
@@ -410,7 +421,57 @@ void mover_personagem_lado(){
     }
 }
 
-void mover_personagem_cima(){
+void mover_personagem_cima_baixo(){
+    switch (joypad()){
+        case J_UP:
+            if(player.y > 35){
+                player.y -= 4;
+            }
+            break;
+        case J_DOWN:
+            if(player.y < 133){
+                player.y += 4;
+            }
+            break;
+        case J_RIGHT:
+            if(player.x < 150){
+                player.x += 6;
+            }
+            break;
+        case J_LEFT:
+            if(player.x > 12){
+                player.x -= 6;
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void mover_inimigo_cima_baixo(){
+    if(inimigo1_y < player.y){
+        inimigo1_y++;
+    }else if(inimigo1_y > player.y){
+        inimigo1_y--;
+    }
+    if(inimigo2_y < player.y){
+        inimigo2_y++;
+    }else if(inimigo2_y > player.y){
+        inimigo2_y--;
+    }
+
+    if(inimigo1_x <= 8){
+        player.pontos++;
+        inimigo1_x = 165;
+        inimigo1_y = sorteio(35, 100);
+    }
+    if(inimigo2_x <= 8){
+        inimigo2_x = 165;
+        inimigo2_y = sorteio(35, 100);
+    }
+}
+
+void mover_personagem_topo(){
     switch (joypad()){
         case J_UP: 
             set_sprite_tile(player.id, 32);
@@ -475,13 +536,13 @@ void mover_personagem_cima(){
 void mover_mochila_lado(){
     switch (joypad()){
         case J_LEFT:
-            if(player.x >= 9){
+            if(player.x >= 16){
                 player.x -= 3 + player.pontos;
             }
             break;
 
         case J_RIGHT:
-            if(player.x <= 150){
+            if(player.x <= 145){
                 player.x += 3 + player.pontos;
             }
             break;
@@ -690,6 +751,8 @@ void verifica_vidas(){
             move_sprite(8, 500, 20);
             move_sprite(9, 500, 20);
             break;
+        default:
+            player.vidas = 0;
         case 0:
             move_sprite(7, 500, 20);
             move_sprite(8, 500, 20);

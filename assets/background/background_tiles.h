@@ -1,6 +1,6 @@
 /*
 
- BACKGROUND TILEST.H
+ ESCAPE_FROM_UESC_1.H
 
  Include File.
 
@@ -10,7 +10,7 @@
   Compression          : None.
   Counter              : None.
   Tile size            : 8 x 8
-  Tiles                : 0 to 6
+  Tiles                : 0 to 18
 
   Palette colors       : None.
   SGB Palette          : None.
@@ -24,8 +24,8 @@
 
 
 /* Bank of tiles. */
-#define backgroundtilesBank 0
+#define tilesbackgroundCimaBank 0
 /* Start of tile array. */
-extern unsigned char backgroundtiles[];
+extern unsigned char tilesbackgroundCima[];
 
-/* End of BACKGROUND TILEST.H */
+/* End of ESCAPE_FROM_UESC_1.H */

@@ -9,13 +9,14 @@
 #include "assets/player/personagem.c"
 #include "assets/player/vida.c"
 #include "assets/background/Mapa_dos_Mapas_QUADRADO.c"
-#include "assets/background/Background_Tiles_Cima.c"
+#include "assets/background/Background_Tiles.c"
 #include "assets/fases/jorge/Mapa.c"
 #include "assets/fases/jorge/plantas_chave.c"
 #include "assets/fases/biblioteca/Background_biblioteca.c"
 #include "assets/fases/biblioteca/Itens.c"
 #include "assets/fases/ceu/Mapa_CEU.c"
 #include "assets/fases/ceu/Tile_Nave.c"
+#include "assets/fases/exatas/Mapa_aquario.c"
 #include "assets/testes/umreal.c"
 #include "assets/testes/Letras.c"
 
@@ -31,7 +32,8 @@
 UINT8 GRAVIDADE = -2;
 UINT8 CHAO = 152;
 int rolagem = 0;
-
+UINT8 inimigo1_x, inimigo1_y, inimigo2_x, inimigo2_y;
+UINT8 velocidade;
 
 
 #include "bin/struct_player.c"
@@ -46,6 +48,8 @@ int rolagem = 0;
 void main(){
 
     int i;
+
+    
 
 /*  []-------- INICIO DO SETUP --------[] */
     iniciar_som(); // INICIAR OS DRIVERS DE AUDIO
@@ -79,7 +83,7 @@ void main(){
     set_sprite_data(83, 1, vida); // SPRITE CORAÇÃO
     set_sprite_data(84, 4, plantas_chave); // PLANTAS INIMIGAS E CHAVE
     set_sprite_data(88, 7, umreal); // SPRITES DE 1 REAL COM ANIMAÇÃO
-    set_sprite_data(95, 4, Tile_Nave); //NAVE
+    set_sprite_data(95, 8, Tile_Nave); //NAVE
     
     // SETANDO TILES
     set_sprite_tile(player.id, 32); // SETA
@@ -88,11 +92,12 @@ void main(){
     background.x = 40;
     background.y = 100;
 
-    set_bkg_data(0, 13, tilesbackgroundCima); // TILES DO BACKGROUND
+    set_bkg_data(0, 18, tilesbackgroundCima); // TILES DO BACKGROUND
     set_bkg_tiles(0, 0, 31, 31, mapamenu); // INICIANDO O MAPA DA UESC
     move_bkg(background.x, background.y);
 /*  []-------- FIM DO SETUP --------[] */
 
+    
     DISPLAY_ON;
     SHOW_SPRITES;
     //escrever("O jogo consiste em voce fugir da uesc pegando todas as letras :UESC:", 50, 0, 50);
@@ -117,7 +122,7 @@ void main(){
         verifica_uesc(); // VERIFICA QUANTAS LETRAS O JOGADOR JÁ POSSUI
         verifica_vidas(); // VERIFICA QUANTAS VIDAS O JOGADOR AINDA POSSUI
         verifica_moedas(); // VERIFICA QUANTAS MOEDAS O JOGADOR POSSUI
-        mover_personagem_cima(); // MOVER O PERSONAGEM NA VISÃO DE CIMA
+        mover_personagem_topo(); // MOVER O PERSONAGEM NA VISÃO DE CIMA
 
         if(joypad() == J_A && verifica_ru()){
             
@@ -144,16 +149,23 @@ void main(){
             while (joypad() != J_A && joypad() != J_B && joypad() != J_START){
                 if(player.contador_RU > 500){ // COOLDOWN PARA PODER COMPRAR VIDA PASSOU
                     confirmar_ru();
+                    remover_sprites(11, 17); // REMOVE A FILA
                     while(1){
                         animacao_moeda();
                         delay(FPS);
                         if(joypad() == J_A){ // COMPRAR VIDA
                             if(player.reais >= 1){
-                                player.vidas++;
-                                player.reais--;
-                                player.contador_RU = 0;
+                                if(player.vidas < 3){
+                                    player.vidas++;
+                                    player.reais--;
+                                    player.contador_RU = 0;
+                                }else{
+                                    vida_cheia();
+                                    delay(100);
+                                    waitpad(J_A);
+                                }
                             }else{
-                                remover_sprites(20, 26);
+                                remover_sprites(20, 33);
                                 moeda.x = 250;
                                 moeda.y = 250;
                                 sem_moedas();
@@ -176,6 +188,7 @@ void main(){
             
             fadeout(delay_rapido);
             remover_sprites(20, 35); // TEXTO SAIDA
+            remover_sprites(11, 17); // REMOVE A FILA
             verifica_vidas();
             verifica_moedas();
             SHOW_BKG;
@@ -294,7 +307,9 @@ void main(){
                         player.vidas--;
                         player.pontos--;
                         verifica_vidas();
+                        som_sair();
                     }else{
+                        som_confirmar();
                         player.pontos++;
                     }
                     livro.naTela = FALSE;
@@ -303,6 +318,7 @@ void main(){
                 if(player.pontos == 10){
                     som_confirmar();
                     player.UESC[3] = TRUE; // ADICIONA A LETRA 'C'
+                    player.reais++;
                     break;
                 }
                 
@@ -431,6 +447,7 @@ void main(){
                     
                     if(colisao_8bits(planta[i].x, planta[i].y, player.x, player.y)){
                         player.vidas--;
+                        som_sair();
                         planta[i].x = 170;
                     }
                 }
@@ -463,6 +480,7 @@ void main(){
                     moeda.contador++;
                 }
                 if(colisao_8bits(moeda.x, moeda.y, player.x, player.y)){
+                    som_confirmar();
                     if(moeda.cont_letra > 5){
                         player.UESC[0] = TRUE;
                         break;
@@ -501,12 +519,27 @@ void main(){
             fadein(100);
         }
         if(joypad() == J_A && verifica_exatas()){
-            HIDE_BKG;
+            fadeout(delay_rapido);
+            set_bkg_tiles(0, 0, 32, 18, Mapa_Aquario);
+            move_bkg(0, 0);
+            fadein(delay_rapido);
             while (joypad() != J_START){
-                
+                scroll_bkg(1, 0);
+                delay(FPS);
             }
-            SHOW_BKG;
-            
+            fadeout(delay_rapido);
+
+            player.x = 80;
+            player.y = 109;
+            set_sprite_tile(player.id, 32); // SETA
+            move_sprite(player.id, player.x, player.y); // SETA
+
+            background.x = 40;
+            background.y = 100;
+            set_bkg_tiles(0, 0, 31, 31, mapamenu);
+            move_bkg(background.x, background.y);
+
+            fadein(delay_rapido);
         }
         if(joypad() == J_A && verifica_adonias()){
             fadeout(100);
@@ -530,32 +563,104 @@ void main(){
             
             player.x = 30;
             player.y = 80;
+            player.pontos = 0;
+            velocidade = 0;
 
             mover_sprites(player.id, player.x, player.y);
 
+            inimigo1_x = 160;
+            inimigo1_y = sorteio(35, 100);
+            set_sprite_tile(11, 99);
+            set_sprite_tile(12, 100);
+            set_sprite_tile(13, 101);
+            set_sprite_tile(14, 102);
+            set_sprite_prop(11, 0);
+            set_sprite_prop(12, 0);
+            set_sprite_prop(13, 0);
+            set_sprite_prop(14, 0);
+
+            inimigo2_x = 160;
+            inimigo2_y = sorteio(35, 100);
+            set_sprite_tile(15, 99);
+            set_sprite_tile(16, 100);
+            set_sprite_tile(17, 101);
+            set_sprite_tile(18, 102);
+            set_sprite_prop(15, 0);
+            set_sprite_prop(16, 0);
+            set_sprite_prop(17, 0);
+            set_sprite_prop(18, 0);
+            mover_sprites(15, inimigo1_x, inimigo1_y);
+            
             SHOW_BKG;
             fadein(100);
             
-            while (joypad() != J_START){
+            while (joypad() != J_START && player.vidas > 0 && player.pontos < 10){
+                verifica_vidas();
+                pontos();
                 mover_sprites(player.id, player.x, player.y);
-                scroll_bkg(1,0);
-                if(joypad() == J_UP){
-                    if(player.y > 35){
-                        player.y -= 3;
+                mover_sprites(11, inimigo1_x, inimigo1_y);
+                mover_sprites(15, inimigo2_x, inimigo2_y);
+                mover_personagem_cima_baixo();
+                mover_inimigo_cima_baixo();
+                
+                if(colisao_12bits(player.x, player.y, inimigo1_x, inimigo1_y)){
+                    player.vidas--;
+                    som_sair();
+                    if(player.pontos > 0){
+                        player.pontos--;
                     }
-                    
-                }else if(joypad() == J_DOWN){
-                    if(player.y < 141){
-                        player.y += 3;
-                    }
-                    
+                    inimigo1_x = 160;
+                    inimigo1_y = sorteio(35, 100);
                 }
+                if(colisao_12bits(player.x, player.y, inimigo2_x, inimigo2_y)){
+                    player.vidas--;
+                    som_sair();
+                    if(player.pontos > 0){
+                        player.pontos--;
+                    }
+                    inimigo2_x = 160;
+                    inimigo2_y = sorteio(35, 100);
+                }
+
+                
+                if(velocidade < 20){
+                    scroll_bkg(1, 0);
+                    inimigo1_x -= 3;
+                    inimigo2_x -= 3;
+                    velocidade++;
+                }else if(velocidade < 40){
+                    scroll_bkg(2, 0);
+                    inimigo1_x -= 4;
+                    inimigo2_x -= 4;
+                    velocidade++;
+                }else if(velocidade < 60){
+                    scroll_bkg(3, 0);
+                    inimigo1_x -= 5;
+                    inimigo2_x -= 5;
+                    velocidade++;
+                }else if(velocidade < 80){
+                    scroll_bkg(4, 0);
+                    inimigo1_x -= 6;
+                    inimigo2_x -= 6;
+                    velocidade++;
+                }else{
+                    scroll_bkg(5, 0);
+                    inimigo1_x -= 7;
+                    inimigo2_x -= 7;
+                }
+                
                 delay(FPS);
             }
             
             fadeout(100);
 
-            remover_sprites(0 , 3);
+            if(player.pontos == 10){
+                player.UESC[2] = TRUE;
+                player.reais++;
+            }
+
+            remover_sprites(0, 3);
+            remover_sprites(11, 32);
             player.x = 80;
             player.y = 109;
             set_sprite_tile(player.id, 32); // SETA
