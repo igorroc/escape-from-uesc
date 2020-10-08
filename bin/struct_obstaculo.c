@@ -4,12 +4,12 @@
 #include <gb/gb.h>
 
 typedef struct Obstaculo{
-    UINT8 id;
-    UINT8 x; //posicao x
-    UINT8 y; //posicao y
-    UINT8 variacao; // 0 PARA PONTO E VIRGULA, 1 PARA MOEDA, 2 PARA CAFE
-    UINT8 velocidade;
-    UINT8 quantidade; // QUANTIDADE DE VEZES QUE ELE JA PASSOU NA TELA
+    UINT8 id; //Indica o id da sprite
+    UINT8 x; //Indica a posição horizontal
+    UINT8 y; //Indica a posição vertical
+    UINT8 variacao; // 0 para ";", 1 para moeda, 2 para café
+    UINT8 velocidade; //Velocidade que o obstaculo passa na tela
+    UINT8 quantidade; //Qauntidade de vezes que o obstaculo passou na tela
 }_Obstaculo;
 
     _Obstaculo obstaculo;

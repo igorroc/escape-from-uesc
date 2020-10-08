@@ -367,7 +367,6 @@ void mover_personagem_lado(){
             rolagem = 0;
             player.piscando++;
             player.agachando = FALSE;
-            player.socando = FALSE;
             if(player.pulando == FALSE){
                 if(player.direcao == 1){
                     if(player.piscando == 100){
@@ -442,8 +441,10 @@ void mover_personagem_cima_baixo(){
 
 void mover_inimigo_cima_baixo(){
     if(inimigo1_y < player.y){
+        set_sprite_tile(30, K);
         inimigo1_y++;
     }else if(inimigo1_y > player.y){
+        set_sprite_tile(30, J);
         inimigo1_y--;
     }
     if(inimigo2_y < player.y){
@@ -453,6 +454,7 @@ void mover_inimigo_cima_baixo(){
     }
 
     if(inimigo1_x <= 8){
+        som_confirmar();
         player.pontos++;
         inimigo1_x = 165;
         inimigo1_y = sorteio(35, 100);
@@ -554,7 +556,7 @@ void setup_plantas(){
     planta[0].x = 0;
     planta[0].y = 52;
     planta[0].direcao = 1;
-    planta[0].velocidade_x = sorteio(1, 4);
+    planta[0].velocidade = sorteio(1, 4);
     planta[0].passo = 0;
     set_sprite_tile(planta[0].id, 84);
 
@@ -562,7 +564,7 @@ void setup_plantas(){
     planta[1].x = 160;
     planta[1].y = 52;
     planta[1].direcao = 0;
-    planta[1].velocidade_x = sorteio(1, 4);
+    planta[1].velocidade = sorteio(1, 4);
     planta[1].passo = 0;
     set_sprite_tile(planta[1].id, 84);
 
@@ -570,7 +572,7 @@ void setup_plantas(){
     planta[2].x = 8;
     planta[2].y = 100;
     planta[2].direcao = 1;
-    planta[2].velocidade_x = sorteio(1, 4);
+    planta[2].velocidade = sorteio(1, 4);
     planta[2].passo = 0;
     set_sprite_tile(planta[2].id, 84);
 
@@ -578,7 +580,7 @@ void setup_plantas(){
     planta[3].x = 160;
     planta[3].y = 100;
     planta[3].direcao = 0;
-    planta[3].velocidade_x = sorteio(1, 4);
+    planta[3].velocidade = sorteio(1, 4);
     planta[3].passo = 0;
     set_sprite_tile(planta[3].id, 84);
 
@@ -586,7 +588,7 @@ void setup_plantas(){
     planta[4].x = 8;
     planta[4].y = 144;
     planta[4].direcao = 1;
-    planta[4].velocidade_x = sorteio(1, 4);
+    planta[4].velocidade = sorteio(1, 4);
     planta[4].passo = 0;
     set_sprite_tile(planta[4].id, 84);
 
@@ -594,7 +596,7 @@ void setup_plantas(){
     planta[5].x = 160;
     planta[5].y = 144;
     planta[5].direcao = 0;
-    planta[5].velocidade_x = sorteio(1, 4);
+    planta[5].velocidade = sorteio(1, 4);
     planta[5].passo = 0;
     set_sprite_tile(planta[5].id, 84);
 }

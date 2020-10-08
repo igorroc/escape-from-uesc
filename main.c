@@ -17,6 +17,7 @@
 #include "assets/fases/ceu/Mapa_CEU.c"
 #include "assets/fases/ceu/Tile_Nave.c"
 #include "assets/fases/exatas/Tiles_CIC.c"
+#include "assets/fases/guarita/onibus.c"
 #include "assets/testes/umreal.c"
 #include "assets/testes/Letras.c"
 
@@ -25,15 +26,14 @@
 #define ALTURA 144
 #define TRUE 1
 #define FALSE 0
-#define FPS 50 // Tempo de delay do jogo, quanto menor mais rapido.
-#define delay_rapido 100
-#define delay_lento 300
+#define FPS 50 //Tempo de delay do jogo, quanto menor mais rapido.
+#define delay_rapido 100 //Tempo de delay de transições.
+#define delay_lento 300 //Tempo de delay de transições.
 
 UINT8 GRAVIDADE = -2;
 UINT8 CHAO = 152;
-int rolagem = 0;
-UINT8 inimigo1_x, inimigo1_y, inimigo2_x, inimigo2_y;
-UINT8 velocidade;
+int rolagem = 0; //Rolagem do background
+UINT8 inimigo1_x, inimigo1_y, inimigo2_x, inimigo2_y; //Inimigos da fase do CEU (Nao consegui criar uma struct com essas variaveis, no codigo ele dava erro)
 UINT8 nivel; // 0 É O MENU, 1 É O EXATAS, 2 É O JORGE, 3 É O CEU, 4 É A BIBLIOTECA
 
 
@@ -44,14 +44,13 @@ UINT8 nivel; // 0 É O MENU, 1 É O EXATAS, 2 É O JORGE, 3 É O CEU, 4 É A BIB
 #include "bin/struct_moeda.c"
 #include "bin/struct_obstaculo.c"
 #include "bin/struct_explorer.c"
+
 #include "bin/functions.c"
 #include "bin/textos.c"
 #include "bin/fases.c"
 
 
 void main(){
-
-    
 
 /*  []-------- INICIO DO SETUP --------[] */
     iniciar_som(); // INICIAR OS DRIVERS DE AUDIO
@@ -68,7 +67,6 @@ void main(){
     player.piscando = 0;
     player.agachando = FALSE;
     player.chao = TRUE;
-    player.socando = FALSE;
     player.pontos = 0;
     player.vidas = 3;
     player.UESC[0] = FALSE;
@@ -87,6 +85,7 @@ void main(){
     set_sprite_data(88, 7, umreal); // SPRITES DE 1 REAL COM ANIMAÇÃO
     set_sprite_data(95, 8, Tile_Nave); //NAVE
     set_sprite_data(103, 9, tiles_CIC); //INTERNET EXPLORER, CAFE, PONTO E VIRGULA
+    set_sprite_data(112, 32, onibus); //ONIBUS E FUMAÇA
     
     // SETANDO TILES
     set_sprite_tile(player.id, 32); // SETA
@@ -94,17 +93,16 @@ void main(){
     // SETANDO BACKGROUND
     background.x = 40;
     background.y = 100;
-    
-    
     set_bkg_data(0, 18, tilesbackgroundCima); // TILES DO BACKGROUND
     set_bkg_tiles(0, 0, mapamenuWidth, mapamenuHeight, mapamenu); // INICIANDO O MAPA DA UESC
     move_bkg(background.x, background.y);
+
 /*  []-------- FIM DO SETUP --------[] */
 
     
+    remover_sprites(0, 39); // LIMPA AS SPRITES
     DISPLAY_ON;
     SHOW_SPRITES;
-    remover_sprites(0, 39);
     intro(); // ANIMAÇÃO DA LOGO DO JOGO
     waitpad(J_START);
     som_confirmar();
@@ -112,20 +110,22 @@ void main(){
     fadeout(delay_rapido);
     remover_sprites(20, 33); // REMOVER INTRO
     SHOW_BKG;
-    verifica_vidas();
-    verifica_moedas();
-    move_sprite(player.id, player.x, player.y);
+    verifica_vidas(); // MOSTRA AS 3 VIDAS DO PERSONAGEM
+    verifica_moedas(); // MOSTRA AS 0 MOEDAS DO PERSONAGEM
+    move_sprite(player.id, player.x, player.y); // MOVE A SETA PARA A TORRE
     fadein(delay_rapido);
 
 
     while(player.vidas > 0){
+
+        nivel = 0;
 
         move_sprite(player.id, player.x, player.y); // SETA
         verifica_uesc(); // VERIFICA QUANTAS LETRAS O JOGADOR JÁ POSSUI
         verifica_vidas(); // VERIFICA QUANTAS VIDAS O JOGADOR AINDA POSSUI
         verifica_moedas(); // VERIFICA QUANTAS MOEDAS O JOGADOR POSSUI
         mover_personagem_topo(); // MOVER O PERSONAGEM NA VISÃO DE CIMA
-        nivel = 0;
+        
         
         if(joypad() == J_A && verifica_exatas()){
             nivel = 1; 
@@ -145,8 +145,10 @@ void main(){
         }
         if(joypad() == J_A && verifica_ru()){
             
+            som_pulo();
+
             fadeout(delay_rapido);
-            move_sprite(player.id, 250, 250); // JOGANDO PARA FORA DA TELA
+            move_sprite(player.id, 250, 250); // JOGANDO SETA PARA FORA DA TELA
             HIDE_BKG;
 
             fadein(delay_rapido);
@@ -167,13 +169,12 @@ void main(){
 
             while (joypad() != J_A && joypad() != J_B && joypad() != J_START){
                 if(player.contador_RU > 500){ // COOLDOWN PARA PODER COMPRAR VIDA PASSOU
-                    confirmar_ru();
+                    confirmar_ru(); // TEXTO
                     remover_sprites(11, 17); // REMOVE A FILA
-                    while(1){
+                    while(TRUE){
                         animacao_moeda();
-                        delay(FPS);
                         if(joypad() == J_A){ // COMPRAR VIDA
-                            if(player.reais >= 1){
+                            if(player.reais >= 1){ // POSSUI PELO MENOS 1 REAL
                                 if(player.vidas < 3){
                                     player.vidas++;
                                     player.reais--;
@@ -181,10 +182,10 @@ void main(){
                                 }else{
                                     escrever("vida", 20, 72, 76);
                                     escrever("cheia", 24, 68, 84);
-                                    delay(100);
+                                    delay(delay_rapido);
                                     waitpad(J_A);
                                 }
-                            }else{
+                            }else{ // NAO POSSUI DINHEIRO
                                 remover_sprites(20, 33);
                                 moeda.x = 250;
                                 moeda.y = 250;
@@ -197,6 +198,7 @@ void main(){
                         }else if(joypad() == J_B || joypad() == J_START){ // CANCELAR COMPRA
                             break;
                         }
+                        delay(FPS);
                     }
                     
                 }else{ // AINDA EM COOLDOWN PARA COMPRAR A VIDA
@@ -206,7 +208,8 @@ void main(){
             }
             
             
-            
+            som_sair();
+
             fadeout(delay_rapido);
             delay(delay_lento);
             remover_sprites(20, 35); // TEXTO SAIDA
@@ -228,6 +231,8 @@ void main(){
             fadein(delay_rapido);
         }
         if(joypad() == J_A && verifica_guarita()){
+            som_pulo();
+
             fadeout(delay_rapido);
             HIDE_BKG;
             move_sprite(player.id, 250, 250);
@@ -237,22 +242,33 @@ void main(){
             fadeout(delay_rapido);
             remover_sprites(20, 26);
             fadein(delay_rapido);
-            if(player.UESC[0] == TRUE && player.UESC[1] == TRUE && player.UESC[2] == TRUE && player.UESC[3] == TRUE){ // COOLDOWN PARA PODER COMPRAR VIDA PASSOU
+            if(player.UESC[0] == TRUE && player.UESC[1] == TRUE && player.UESC[2] == TRUE && player.UESC[3] == TRUE){ // VERIFICA SE ELE JA TEM TODAS AS LETRAS
                 escrever("escolha se", 17, 44, 81);
                 escrever("u", 26, 124, 81);
                 escrever("destino", 27, 60, 89);
                 delay(delay_lento);
                 escolher_saida();
+                remover_sprites(0, 39);
+                escrever("muito", 0, 70, 73);
+                escrever("corajoso", 5, 58, 81);
+                escrever("de sua par", 13, 42, 89);
+                escrever("te", 21, 122, 89);
+                escrever("voltar aqu", 23, 46, 97);
+                escrever("i", 32, 126, 97);
+                delay(delay_lento);
+                delay(delay_lento);
             }else{
                 escrever("colete", 17, 64, 77);
                 escrever("todas as", 23, 56, 85);
                 escrever("letras", 30, 64, 93);
                 waitpad(J_START);
             }
-            
-            
+
+            som_sair();
+
             fadeout(delay_rapido);
             SHOW_BKG;
+            remover_sprites(0, 39);
             player.x = 80;
             player.y = 109;
             move_sprite(player.id, player.x, player.y); // SETA
@@ -322,7 +338,7 @@ void main(){
             player.UESC[1] = TRUE;
             player.UESC[2] = TRUE;
             player.UESC[3] = TRUE;
-        
+            
         }
         
         player.contador_RU++;

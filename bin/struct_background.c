@@ -4,8 +4,8 @@
 #include <gb/gb.h>
 
 typedef struct Background{
-    UINT8 x; //posicao x
-    UINT8 y; //posicao y
+    UINT8 x; //Indica a posição horizontal
+    UINT8 y; //Indica a posição vertical
 }_Background;
 
     _Background background;

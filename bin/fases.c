@@ -11,28 +11,92 @@
 #define delay_rapido 100
 #define delay_lento 300
 
-void onibus(){
+UINT8 x, y;
+
+void onibus_saida(){
+
     CHAO = 124;
+
     while(joypad() != J_START){
+
+        move_sprite(5, x, y);
+        move_sprite(6, x, y+8);
+        move_sprite(7, x+8, y);
+        move_sprite(8, x+8, y+8);
+        move_sprite(9, x, y+16);
+        move_sprite(10, x, y+24);
+        move_sprite(11, x+8, y+16);
+        move_sprite(12, x+8, y+24);
+        move_sprite(13, x+16, y);
+        move_sprite(14, x+16, y+8);
+        move_sprite(15, x+24, y);
+        move_sprite(16, x+24, y+8);
+        move_sprite(17, x+16, y+16);
+        move_sprite(18, x+16, y+24);
+        move_sprite(19, x+24, y+16);
+        move_sprite(20, x+24, y+24);
+        
+        if(x == 200){
+            x = 200;
+            escrever("Perdeu o", 5, 56, 50);
+            escrever("Busao", 12, 68, 58);
+            delay(delay_lento);
+            delay(delay_lento);
+            remover_sprites(5, 39);
+            escrever("mas ganhou", 5, 48, 50);
+            escrever("o jogo", 14, 64, 58);
+            delay(delay_lento);
+            escrever("press ente", 19, 44, 74);
+            escrever("r", 28, 124, 74);
+            waitpad(J_START);
+            som_pulo();
+            fadeout(delay_rapido);
+            HIDE_BKG;
+            remover_sprites(0, 39);
+            fadein(delay_rapido);
+            escrever("voce fugiu", 0, 50, 81);
+            escrever("da uesc", 9, 62, 89);
+            som_confirmar();
+            waitpad(J_START);
+            fadeout(delay_rapido);
+            DISPLAY_OFF;
+        }
+
+        else if(player.x < 85 && player.escolha == 0){
+            x--;
+        }
+
+        else if(player.x > 70 && player.escolha == 1){
+            x++;
+        }
+
         mover_sprites(player.id, player.x, player.y);
+        verifica_borda();
         mover_personagem_lado();
         if(player.pulando == TRUE){
             pular();
         }
         delay(FPS);
     }
+    fadeout(delay_rapido);
     HIDE_BKG;
+    remover_sprites(0, 39);
+    player.x = 46;
+    player.y = 85;
+    set_sprite_tile(5, 33); // SETA
+    fadein(delay_rapido);
 }
 
 void jogar_exatas(){
+    som_pulo();
     fadeout(delay_rapido);
     HIDE_BKG;
-    move_sprite(player.id, 250, 250);
+    move_sprite(player.id, 250, 250); // REMOVE A SETA
     fadein(delay_rapido);
     escrever("exatas", 20, 64, 85);
     delay(delay_lento);
     fadeout(delay_rapido);
-    remover_sprites(20, 25);
+    remover_sprites(20, 25); // REMOVE O TEXTO
     SHOW_BKG;
     set_bkg_tiles(0, 0, mapa_bibliotecaWidth, mapa_bibliotecaHeight, mapa_biblioteca);
     move_bkg(0, 0);
@@ -44,6 +108,7 @@ void jogar_exatas(){
     player.x = 80;
     player.y = 109;
     player.passo = 1;
+    player.direcao = 1;
     mover_sprites(player.id, player.x, player.y);
 
     CHAO = 124;
@@ -61,7 +126,7 @@ void jogar_exatas(){
     explorer.id = 20;
     explorer.x = 0;
     explorer.y = 100;
-    explorer.passo = 0;
+    explorer.flutuar = 0;
 
     set_sprite_tile(explorer.id, 107);
     set_sprite_tile(explorer.id+1, 108);
@@ -107,20 +172,20 @@ void jogar_exatas(){
 
         
 
-        if(explorer.passo%3 == 0){
+        if(explorer.flutuar%3 == 0){
             if(player.x > explorer.x){
                 explorer.x++;
             }else if(player.x < explorer.x){
                 explorer.x--;
             }
-            explorer.passo++;
+            explorer.flutuar++;
         }else{
-            explorer.passo++;
+            explorer.flutuar++;
         }
 
-        switch (explorer.passo){
+        switch (explorer.flutuar){
             case 22:
-                explorer.passo = 0;
+                explorer.flutuar = 0;
             case 0:
                 explorer.y -= 11;
                 break;
@@ -170,17 +235,20 @@ void jogar_exatas(){
         }
 
         if(colisao_16bits(player.x, player.y, explorer.x, explorer.y)){
+            som_sair();
             player.vidas--;
             explorer.x = 0;
         }
 
-        obstaculo.x -= 5;
+        obstaculo.x -= obstaculo.velocidade;
         if(player.pulando == TRUE){
             pular();
         }
         if(obstaculo.x <= 8){
             obstaculo.quantidade++;
-            obstaculo.velocidade++;
+            if(obstaculo.velocidade < 10){
+                obstaculo.velocidade++;
+            }
             obstaculo.x = 200;
             if(obstaculo.variacao == 2){
                 obstaculo.variacao = 0;
@@ -197,12 +265,14 @@ void jogar_exatas(){
         }else{
             if(colisao_8bits(obstaculo.x, obstaculo.y, player.x, player.y)){
                 if(obstaculo.variacao == 0){
+                    som_sair();
                     player.vidas--;
                     obstaculo.x = 200;
                     if(obstaculo.velocidade >= 3){
                         obstaculo.velocidade -= 3;
                     }
                 }else if(obstaculo.variacao == 1){
+                    som_confirmar();
                     if(player.reais < 9){
                         player.reais++;
                     }
@@ -219,6 +289,7 @@ void jogar_exatas(){
         delay(FPS);
     }
     
+    som_sair();
     fadeout(delay_rapido);
 
     CHAO = 152;
@@ -239,7 +310,7 @@ void jogar_exatas(){
 
 void jogar_biblioteca(){
     
-    som_confirmar();
+    som_pulo();
     
     fadeout(delay_rapido);
     HIDE_BKG;
@@ -279,6 +350,7 @@ void jogar_biblioteca(){
     player.x = 80;
     player.y = 109;
     player.pontos = 0;
+    player.direcao = 1;
 
     mover_sprites(player.id, player.x, player.y);
 
@@ -352,7 +424,7 @@ void jogar_biblioteca(){
         
     }
 
-    fadeout(100);
+    fadeout(delay_rapido);
     som_sair();
     remover_sprites(20, 27); // REMOVER TEXTO PONTOS
     set_sprite_tile(player.id, 32); // SETA
@@ -371,14 +443,15 @@ void jogar_biblioteca(){
     move_bkg(background.x, background.y);
     set_bkg_tiles(0, 0, 31, 31, mapamenu);
 
-    fadein(100);
+    fadein(delay_rapido);
     
 }
 
 void jogar_jorge(){
     int i;
 
-    fadeout(100);
+    som_pulo();
+    fadeout(delay_rapido);
     mover_sprites(player.id, 250, 250); // TIRA A SETA
     HIDE_BKG;
     fadein(delay_rapido);
@@ -401,6 +474,7 @@ void jogar_jorge(){
     player.velocidade_y = 0;
     player.x = 80;
     player.y = 120;
+    player.direcao = 1;
     mover_sprites(player.id, player.x, player.y);
 
     setup_plantas();
@@ -443,18 +517,18 @@ void jogar_jorge(){
             if(planta[i].direcao == 1){ //VIRADO PRA DIREITA
                 set_sprite_prop(planta[i].id, S_FLIPX);
                 if(planta[i].x < 160){
-                    planta[i].x += planta[i].velocidade_x;
+                    planta[i].x += planta[i].velocidade;
                 }else{
                     planta[i].x = 0;
-                    planta[i].velocidade_x = sorteio(1, 4);
+                    planta[i].velocidade = sorteio(1, 4);
                 }
             }else{ //VIRADO PRA ESQUERDA
                 set_sprite_prop(planta[i].id, 0);
                 if(planta[i].x > 0){
-                    planta[i].x -= planta[i].velocidade_x;
+                    planta[i].x -= planta[i].velocidade;
                 }else{
                     planta[i].x = 160;
-                    planta[i].velocidade_x = sorteio(1, 4);
+                    planta[i].velocidade = sorteio(1, 4);
                 }
             }
 
@@ -524,6 +598,9 @@ void jogar_jorge(){
         verifica_vidas();
         delay(FPS);
     }
+
+    som_sair();
+
     fadeout(delay_rapido);
 
     remover_sprites(player.id, player.id+3); // REMOVE O PLAYER
@@ -545,6 +622,8 @@ void jogar_jorge(){
 }
 
 void jogar_adonias(){
+    UINT8 velocidade;
+    som_pulo();
     fadeout(delay_rapido);
     mover_sprites(player.id, 250, 250);
     HIDE_BKG;
@@ -587,7 +666,7 @@ void jogar_adonias(){
     mover_sprites(15, inimigo1_x, inimigo1_y);
     
     SHOW_BKG;
-    fadein(100);
+    fadein(delay_rapido);
     
     while (joypad() != J_START && player.vidas > 0 && player.pontos < 10){
         verifica_vidas();
@@ -599,8 +678,8 @@ void jogar_adonias(){
         mover_inimigo_cima_baixo();
         
         if(colisao_12bits(player.x, player.y, inimigo1_x, inimigo1_y)){
-            player.vidas--;
             som_sair();
+            player.vidas--;
             if(player.pontos > 0){
                 player.pontos--;
             }
@@ -608,8 +687,8 @@ void jogar_adonias(){
             inimigo1_y = sorteio(35, 100);
         }
         if(colisao_12bits(player.x, player.y, inimigo2_x, inimigo2_y)){
-            player.vidas--;
             som_sair();
+            player.vidas--;
             if(player.pontos > 0){
                 player.pontos--;
             }
@@ -646,8 +725,10 @@ void jogar_adonias(){
         
         delay(FPS);
     }
+
+    som_sair();
     
-    fadeout(100);
+    fadeout(delay_rapido);
 
     if(player.pontos == 10){
         player.UESC[2] = TRUE;
@@ -666,7 +747,7 @@ void jogar_adonias(){
     set_bkg_tiles(0, 0, 31, 31, mapamenu);
     move_bkg(background.x, background.y);
     
-    fadein(100);
+    fadein(delay_rapido);
     
 }
 
@@ -683,14 +764,15 @@ void escolher_saida(){
     
     escrever("ilheus", 10, 58, 69);
     escrever("itabuna", 16, 58, 85);
-    escrever("hellzinho", 23, 60, 101);
+    escrever("hellzinho", 23, 60, 101); // NÃO CONSEGUIMOS ESCREVER INFERNINHO POR CONTA DA LIMITAÇÃO DE 11 SPRTIES NA MESMA LINHA
 
     move_sprite(5, player.x, player.y);
     
     while (joypad() != J_START){
-        move_sprite(5, player.x, player.y); // ESCOLHA
+        move_sprite(5, player.x, player.y); // SETA DA ESCOLHA
         switch (joypad()){
             case J_UP:
+                delay(delay_lento);
                 if(player.y == 69){
                     player.y = 101;
                 }else if(player.y == 85){
@@ -700,6 +782,7 @@ void escolher_saida(){
                 }
                 break;
             case J_DOWN:
+                delay(delay_lento);
                 if(player.y == 69){
                     player.y = 85;
                 }else if(player.y == 85){
@@ -713,34 +796,92 @@ void escolher_saida(){
                 remover_sprites(0, 39);
                 fadein(delay_rapido);
                 if(player.y == 69){ //INDO PRA ILHEUS
-                    escrever("parabens", 20, 58, 81);
-                    escrever("voce ganhou", 28, 46, 89);
-                    escrever("u", 37, 126, 89);
-                    waitpad(J_START);
-                    /*
-                    reset_sprites(player.id, 4);
-                    set_sprite_tile(player.id, 42);
-                    set_sprite_tile(player.id+1, 43);
-                    set_sprite_tile(player.id+2, 44);
-                    set_sprite_tile(player.id+3, 45);
-                    player.x = 30;
+
+                    set_sprite_prop(player.id, S_FLIPX);
+                    set_sprite_prop(player.id+1, S_FLIPX);
+                    set_sprite_prop(player.id+2, S_FLIPX);
+                    set_sprite_prop(player.id+3, S_FLIPX);
+
+                    set_sprite_tile(player.id, 44);
+                    set_sprite_tile(player.id+1, 45);
+                    set_sprite_tile(player.id+2, 42);
+                    set_sprite_tile(player.id+3, 43);
+                    player.x = 120;
+                    player.y = 108;
                     player.pulando = TRUE;
+                    player.escolha = 0;
+                    player.direcao = -1;
+
+                    x = 8;
+                    y = 92;
                     
                     // INICIA O MAPA DA BIBLIOTECA
                     set_bkg_tiles(0, 0, mapa_bibliotecaWidth, mapa_bibliotecaHeight, mapa_biblioteca);
                     move_bkg(0, 0);
                     mover_sprites(player.id, player.x, player.y);
                     SHOW_BKG;
-                    onibus();
-                    */
+
+                    // SETANDO AS SPRITES DO ONIBUS
+                    set_sprite_tile(5, 112);
+                    set_sprite_tile(6, 113);
+                    set_sprite_tile(7, 114);
+                    set_sprite_tile(8, 115);
+                    set_sprite_tile(9, 116);
+                    set_sprite_tile(10, 117);
+                    set_sprite_tile(11, 118);
+                    set_sprite_tile(12, 119);
+                    set_sprite_tile(13, 120);
+                    set_sprite_tile(14, 121);
+                    set_sprite_tile(15, 122);
+                    set_sprite_tile(16, 123);
+                    set_sprite_tile(17, 124);
+                    set_sprite_tile(18, 125);
+                    set_sprite_tile(19, 126);
+                    set_sprite_tile(20, 127);
+
+                    onibus_saida();
+                    
                 }else if(player.y == 85){ //INDO PRA ITABUNA
-                    escrever("parabens", 20, 58, 81);
-                    escrever("voce ganhou", 28, 46, 89);
-                    escrever("u", 37, 126, 89);
-                    waitpad(J_START);
-                    /*
-                    onibus();
-                    */
+                    
+                    reset_sprites(player.id, 4);
+                    set_sprite_tile(player.id, 42);
+                    set_sprite_tile(player.id+1, 43);
+                    set_sprite_tile(player.id+2, 44);
+                    set_sprite_tile(player.id+3, 45);
+                    player.x = 40;
+                    player.y = 108;
+                    player.pulando = TRUE;
+                    player.escolha = 1;
+                    player.direcao = 1;
+
+                    x = 136;
+                    y = 92;
+                    
+                    // INICIA O MAPA DA BIBLIOTECA
+                    set_bkg_tiles(0, 0, mapa_bibliotecaWidth, mapa_bibliotecaHeight, mapa_biblioteca);
+                    move_bkg(0, 0);
+                    mover_sprites(player.id, player.x, player.y);
+                    SHOW_BKG;
+
+                    set_sprite_tile(5, 128);
+                    set_sprite_tile(6, 129);
+                    set_sprite_tile(7, 130);
+                    set_sprite_tile(8, 131);
+                    set_sprite_tile(9, 132);
+                    set_sprite_tile(10, 133);
+                    set_sprite_tile(11, 134);
+                    set_sprite_tile(12, 135);
+                    set_sprite_tile(13, 136);
+                    set_sprite_tile(14, 137);
+                    set_sprite_tile(15, 138);
+                    set_sprite_tile(16, 139);
+                    set_sprite_tile(17, 140);
+                    set_sprite_tile(18, 141);
+                    set_sprite_tile(19, 142);
+                    set_sprite_tile(20, 143);
+                    
+                    onibus_saida();
+                    
                 }else if(player.y == 101){ //INDO PRO INFERNINHO
                     escrever("aperte: a", 20, 52, 81);
                     escrever("para beber", 28, 48, 89);
@@ -766,9 +907,24 @@ void escolher_saida(){
                 break;
         }
 
-        delay(FPS);
     }
+    fadeout(delay_rapido);
     remover_sprites(0, 39);
+    set_sprite_tile(player.id, 32); // SETA
+    move_sprite(player.id+1, 250, 250); // JOGANDO PARA FORA DA TELA
+    move_sprite(player.id+2, 250, 250); // JOGANDO PARA FORA DA TELA
+    move_sprite(player.id+3, 250, 250); // JOGANDO PARA FORA DA TELA
+
+    // VOLTA PARA A TORRE
+    player.x = 80;
+    player.y = 109;
+    player.pontos = 0;
+
+    background.x = 40;
+    background.y = 100;
+    move_bkg(background.x, background.y);
+    set_bkg_tiles(0, 0, 31, 31, mapamenu);
+    fadein(delay_rapido);
 }
 
 #endif

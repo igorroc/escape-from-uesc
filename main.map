@@ -24,13 +24,13 @@ AREA .  .ABS.
 		l__HOME	01E3
 		s__CODE	0200
 		l__BASE	034B
-		l__CODE	665B
-		s__HOME	685B
-		s__BASE	6A3E
-		s__LIT	6D89
-		s__GSINIT	6D89
-		s__GSINITTAIL	6D9B
-		s__GSFINAL	6D9C
+		l__CODE	705F
+		s__HOME	725F
+		s__BASE	7442
+		s__LIT	778D
+		s__GSINIT	778D
+		s__GSINITTAIL	779F
+		s__GSFINAL	77A0
 		.OAM	C000
 		s__DATA	C0A0
 		s__BSS	C0FE
@@ -45,7 +45,7 @@ AREA .  .ABS.
 AREA _CODE
 	RADIX HEX
 	BASE 0200
-	SIZE 665B
+	SIZE 705F
 	ATTRIB REL CON
 	GLOBALS
 		_intro	0200
@@ -60,60 +60,61 @@ AREA _CODE
 		_Mapa_CEU	119D
 		_Tile_Nave	13DD
 		_tiles_CIC	15DD
-		_umreal	166D
-		_letras	16DD
-		_confirmar_ru	192D
-		_pontos	19DC
-		_verifica_uesc	1B7C
-		_verifica_moedas	1CAF
-		_game_over	1CFA
-		_ru_timer	2056
-		_remover_sprites	22AD
-		_escrever	22EE
-		_fadeout	2425
-		_fadein	24A6
-		_iniciar_som	2510
-		_som_pulo	251D
-		_som_soco	2532
-		_som_confirmar	2547
-		_som_sair	255C
-		_colisao_chao	2571
-		_colisao_plataforma	258C
-		_colisao_16bits	25C4
-		_colisao_8bits	2608
-		_colisao_12bits	264C
-		_pular	2690
-		_mover_personagem_lado	27C6
-		_mover_personagem_cima_baixo	2E27
-		_mover_inimigo_cima_baixo	2EEE
-		_mover_personagem_topo	2F84
-		_mover_mochila_lado	31B5
-		_mover_sprites	322C
-		_setup_plantas	3296
-		_animacao_moeda	34D2
-		_reset_sprites	3754
-		_verifica_guarita	379C
-		_verifica_biblioteca	37D0
-		_verifica_jorge	380A
-		_verifica_exatas	3844
-		_verifica_adonias	387E
-		_verifica_arvore_cima	38B8
-		_verifica_torre	38F2
-		_verifica_ru	392C
-		_verifica_borda	395F
-		_verifica_vidas	399F
-		_sorteio	3AC9
-		_onibus	3B00
-		_jogar_exatas	3B8A
-		_jogar_biblioteca	4493
-		_jogar_jorge	4A21
-		_jogar_adonias	528C
-		_escolher_saida	57A7
-		_main	5BE6
-		_rand	67E2
-		_randw	67E2
-		_time	680D
-		_abs	6833
+		_onibus	166D
+		_umreal	186D
+		_letras	18DD
+		_confirmar_ru	1B2D
+		_pontos	1BDC
+		_verifica_uesc	1D7C
+		_verifica_moedas	1EAF
+		_game_over	1EFA
+		_ru_timer	2256
+		_remover_sprites	24AD
+		_escrever	24EE
+		_fadeout	2625
+		_fadein	26A6
+		_iniciar_som	2710
+		_som_pulo	271D
+		_som_soco	2732
+		_som_confirmar	2747
+		_som_sair	275C
+		_colisao_chao	2771
+		_colisao_plataforma	278C
+		_colisao_16bits	27C4
+		_colisao_8bits	2808
+		_colisao_12bits	284C
+		_pular	2890
+		_mover_personagem_lado	29C6
+		_mover_personagem_cima_baixo	3021
+		_mover_inimigo_cima_baixo	30E8
+		_mover_personagem_topo	31A1
+		_mover_mochila_lado	33D2
+		_mover_sprites	3449
+		_setup_plantas	34B3
+		_animacao_moeda	36EF
+		_reset_sprites	3971
+		_verifica_guarita	39B9
+		_verifica_biblioteca	39ED
+		_verifica_jorge	3A27
+		_verifica_exatas	3A61
+		_verifica_adonias	3A9B
+		_verifica_arvore_cima	3AD5
+		_verifica_torre	3B0F
+		_verifica_ru	3B49
+		_verifica_borda	3B7C
+		_verifica_vidas	3BBC
+		_sorteio	3CE6
+		_onibus_saida	3D1D
+		_jogar_exatas	40F9
+		_jogar_biblioteca	4A2A
+		_jogar_jorge	4FBE
+		_jogar_adonias	5835
+		_escolher_saida	5D4D
+		_main	64FE
+		_rand	71E6
+		_randw	71E6
+		_time	7211
+		_abs	7237
 AREA _HEADER
 	RADIX HEX
 	BASE 0000
@@ -123,130 +124,130 @@ AREA _HEADER
 		_exit	01D2
 AREA _HOME
 	RADIX HEX
-	BASE 685B
+	BASE 725F
 	SIZE 01E3
 	ATTRIB REL CON
 	GLOBALS
-		.set_mode	685B
-		.remove_VBL	686B
-		.remove_LCD	6871
-		.remove_TIM	6877
-		.remove_SIO	687D
-		.remove_JOY	6883
-		.add_VBL	6889
-		.add_LCD	688F
-		.add_TIM	6895
-		.add_SIO	689B
-		.add_JOY	68A1
-		.remove_int	68A7
-		.add_int	68C7
-		.wait_vbl_done	68E3
-		_wait_vbl_done	68E3
-		_display_off	68FA
-		.display_off	68FA
-		.serial_IO	691B
-		_mode	694A
-		_get_mode	6953
-		_enable_interrupts	6958
-		_disable_interrupts	695A
-		_reset	695C
-		.reset	695C
-		_set_interrupts	6962
-		_remove_VBL	696D
-		_remove_LCD	6978
-		_remove_TIM	6983
-		_remove_SIO	698E
-		_remove_JOY	6999
-		_add_VBL	69A4
-		_add_LCD	69AF
-		_add_TIM	69BA
-		_add_SIO	69C5
-		_add_JOY	69D0
-		_clock	69DB
-		__printTStates	69E4
-		banked_call	69E5
-		banked_ret	69FE
-		_strlen	6A07
+		.set_mode	725F
+		.remove_VBL	726F
+		.remove_LCD	7275
+		.remove_TIM	727B
+		.remove_SIO	7281
+		.remove_JOY	7287
+		.add_VBL	728D
+		.add_LCD	7293
+		.add_TIM	7299
+		.add_SIO	729F
+		.add_JOY	72A5
+		.remove_int	72AB
+		.add_int	72CB
+		.wait_vbl_done	72E7
+		_wait_vbl_done	72E7
+		_display_off	72FE
+		.display_off	72FE
+		.serial_IO	731F
+		_mode	734E
+		_get_mode	7357
+		_enable_interrupts	735C
+		_disable_interrupts	735E
+		_reset	7360
+		.reset	7360
+		_set_interrupts	7366
+		_remove_VBL	7371
+		_remove_LCD	737C
+		_remove_TIM	7387
+		_remove_SIO	7392
+		_remove_JOY	739D
+		_add_VBL	73A8
+		_add_LCD	73B3
+		_add_TIM	73BE
+		_add_SIO	73C9
+		_add_JOY	73D4
+		_clock	73DF
+		__printTStates	73E8
+		banked_call	73E9
+		banked_ret	7402
+		_strlen	740B
 AREA _BASE
 	RADIX HEX
-	BASE 6A3E
+	BASE 7442
 	SIZE 034B
 	ATTRIB REL CON
 	GLOBALS
-		.set_sprite_prop	6A3E
-		_set_sprite_prop	6A4B
-		_scroll_bkg	6A56
-		_initrand	6A6C
-		.initrand	6A6E
-		.padup	6A77
-		_waitpadup	6A77
-		.jpad	6A87
-		.wait_pad	6AB4
-		_joypad	6ABB
-		_waitpad	6AC0
-		__mulschar	6ACA
-		__muluchar	6ACA
-		__mulsint	6AD6
-		__muluint	6AD6
-		.mulu16	6AEA
-		.mul16	6AEA
-		.mv_sprite	6B00
-		_move_sprite	6B0F
-		__modslong	6B1C
-		__divslong	6B1C
-		__mulslong	6B1C
-		__divschar	6B1D
-		__modschar	6B29
-		__divsint	6B34
-		__modsint	6B45
-		__divuchar	6B54
-		__moduchar	6B60
-		__divuint	6B6B
-		__moduint	6B7C
-		.mod8	6B8B
-		.div8	6B8B
-		.mod16	6B93
-		.div16	6B93
-		.modu8	6BC9
-		.divu8	6BC9
-		.modu16	6BCC
-		.divu16	6BCC
-		_set_win_data	6C09
-		_set_bkg_data	6C09
-		_set_sprite_data	6C56
-		_move_bkg	6C85
-		.set_sprite_tile	6C8E
-		_set_sprite_tile	6C9B
-		.delay	6CA6
-		_delay	6CE0
-		.copy_vram	6CE9
-		_get_data	6CF8
-		_set_data	6CF8
-		_set_bkg_tiles	6D0B
-		.set_xy_wtt	6D1F
-		.set_xy_btt	6D30
-		.set_xy_tt	6D3F
-		_set_tiles	6D70
+		.set_sprite_prop	7442
+		_set_sprite_prop	744F
+		_scroll_bkg	745A
+		_initrand	7470
+		.initrand	7472
+		.padup	747B
+		_waitpadup	747B
+		.jpad	748B
+		.wait_pad	74B8
+		_joypad	74BF
+		_waitpad	74C4
+		__mulschar	74CE
+		__muluchar	74CE
+		__mulsint	74DA
+		__muluint	74DA
+		.mulu16	74EE
+		.mul16	74EE
+		.mv_sprite	7504
+		_move_sprite	7513
+		__modslong	7520
+		__divslong	7520
+		__mulslong	7520
+		__divschar	7521
+		__modschar	752D
+		__divsint	7538
+		__modsint	7549
+		__divuchar	7558
+		__moduchar	7564
+		__divuint	756F
+		__moduint	7580
+		.mod8	758F
+		.div8	758F
+		.mod16	7597
+		.div16	7597
+		.modu8	75CD
+		.divu8	75CD
+		.modu16	75D0
+		.divu16	75D0
+		_set_win_data	760D
+		_set_bkg_data	760D
+		_set_sprite_data	765A
+		_move_bkg	7689
+		.set_sprite_tile	7692
+		_set_sprite_tile	769F
+		.delay	76AA
+		_delay	76E4
+		.copy_vram	76ED
+		_get_data	76FC
+		_set_data	76FC
+		_set_bkg_tiles	770F
+		.set_xy_wtt	7723
+		.set_xy_btt	7734
+		.set_xy_tt	7743
+		_set_tiles	7774
 AREA _LIT
 	RADIX HEX
-	BASE 6D89
+	BASE 778D
 	SIZE 0000
 	ATTRIB REL CON
 AREA _GSINIT
 	RADIX HEX
-	BASE 6D89
+	BASE 778D
 	SIZE 0012
 	ATTRIB REL CON
 	GLOBALS
-		gsinit	6D89
+		gsinit	778D
 AREA _GSINITTAIL
 	RADIX HEX
-	BASE 6D9B
+	BASE 779F
 	SIZE 0001
 	ATTRIB REL CON
 AREA _GSFINAL
 	RADIX HEX
-	BASE 6D9C
+	BASE 77A0
 	SIZE 0000
 	ATTRIB REL CON
 AREA _DATA
@@ -262,15 +263,16 @@ AREA _DATA
 		_inimigo1_y	C0A5
 		_inimigo2_x	C0A6
 		_inimigo2_y	C0A7
-		_velocidade	C0A8
-		_nivel	C0A9
-		_player	C0AA
-		_livro	C0BE
-		_planta	C0C4
-		_background	C0E8
-		_moeda	C0EA
-		_obstaculo	C0F3
-		_explorer	C0F9
+		_nivel	C0A8
+		_player	C0A9
+		_livro	C0BD
+		_planta	C0C3
+		_background	C0E7
+		_moeda	C0E9
+		_obstaculo	C0F2
+		_explorer	C0F8
+		_x	C0FC
+		_y	C0FD
 AREA _BSS
 	RADIX HEX
 	BASE C0FE
@@ -385,7 +387,7 @@ MODULES
 	FILE c:\gbdk\lib/small/asxxxx/gb/crt0.o
 		NAME Runtime
 	FILE main.o
-		NAME lcc95520
+		NAME lcc63680
 LIBRARIES
 	LIBRARY c:\gbdk\lib/small/asxxxx/gb/gb.lib
 		MODULE sfr.o
